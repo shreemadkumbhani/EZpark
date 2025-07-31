@@ -1,0 +1,75 @@
+/* Dashboard.css */
+
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #ff1f1f;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.slot {
+  padding: 15px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.slot.available {
+  background-color: #16a34a; /* green */
+  color: white;
+}
+
+.slot.selected {
+  background-color: #2563eb; /* blue */
+  color: white;
+  transform: scale(1.05);
+}
+
+.slot.booked {
+  background-color: #b91c1c; /* red */
+  color: white;
+  cursor: not-allowed;
+}
+
+.booking-action {
+  margin-top: 30px;
+}
+
+.confirm-button {
+  background-color: #ff1f1f;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.confirm-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.confirm-button:hover:enabled {
+  background-color: #e60000;
+}
