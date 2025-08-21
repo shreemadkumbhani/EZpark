@@ -5,8 +5,11 @@ import SplashScreen from "./components/SplashScreen";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ForgotPassword from "./pages/Login/ForgotPassword";
+import ResetPassword from "./pages/Login/ResetPassword";
 import BookingHistory from "./pages/BookingHistory/BookingHistory";
 import Home from "./pages/Home/Home";
+import OwnerRegister from "./pages/OwnerRegister/OwnerRegister";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -30,12 +33,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/booking-history" element={<BookingHistory />} />
-        <Route
-          path="/"
-          element={<h2 style={{ padding: "20px" }}>Welcome to ParkEasy</h2>}
-        />
+        <Route path="/owner/register" element={<OwnerRegister />} />
       </Routes>
     </Router>
   );

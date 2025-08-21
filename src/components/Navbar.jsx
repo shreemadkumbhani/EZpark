@@ -3,6 +3,13 @@ import "./Navbar.css";
 
 export default function Navbar() {
   const isLoggedIn = !!localStorage.getItem("token");
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+      return null;
+    }
+  })();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,7 +25,6 @@ export default function Navbar() {
         <li>
           <Link to="/">Home</Link>
         </li>
-
         {!isLoggedIn && (
           <>
             <li>
@@ -29,7 +35,6 @@ export default function Navbar() {
             </li>
           </>
         )}
-
         {isLoggedIn && (
           <>
             <li>
@@ -37,6 +42,13 @@ export default function Navbar() {
             </li>
             <li>
               <Link to="/booking-history">History</Link>
+            </li>
+            <li>
+              {user?.role === "owner" ? (
+                <Link to="/owner/register">Add Parking</Link>
+              ) : (
+                <Link to="/owner/register">Become Owner</Link>
+              )}
             </li>
             <li>
               <button onClick={handleLogout} className="logout-btn">

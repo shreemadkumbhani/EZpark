@@ -1,10 +1,37 @@
+/* Password input wrapper for eye icon */
+.login-password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 18px; /* move spacing to wrapper for accurate centering */
+}
+
+/* Prevent extra space inside wrapper so centering uses input height */
+.login-password-wrapper .login-input {
+  margin-bottom: 0;
+}
+
+.login-eye-btn {
+  position: absolute;
+  right: calc(6% + 2px); /* very close to the input's right border */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #888;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  z-index: 1;
+}
 .login-container {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
   background-color: #0f0f0f;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login-form {
@@ -28,6 +55,14 @@
   text-align: center;
   margin-bottom: 16px;
   font-size: 14px;
+}
+
+.login-success {
+  color: #34d399; /* green-400 */
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+  white-space: pre-line;
 }
 
 .login-input {
@@ -61,4 +96,19 @@
 
 .login-button:hover {
   background-color: #b00610;
+}
+
+.login-forgot {
+  margin-top: 12px;
+  text-align: right;
+}
+
+.login-forgot a {
+  color: #ff2e2e;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.login-forgot a:hover {
+  text-decoration: underline;
 }

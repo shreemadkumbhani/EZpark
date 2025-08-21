@@ -1,0 +1,56 @@
+/* Owner Register page */
+.owner-wrap {
+  min-height: 100vh;
+  background: #0f0f0f;
+  color: #fff;
+  padding: 36px 20px;
+}
+.owner-title {
+  text-align: center;
+  color: #ff2e2e;
+  font-weight: 800;
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+.owner-form {
+  max-width: 520px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #171717, #0f0f0f);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
+    0 2px 0 rgba(255, 0, 0, 0.04) inset;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+.owner-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+.owner-form input {
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.owner-form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.owner-submit {
+  background: linear-gradient(180deg, #ff2e2e, #e60e0e);
+  border: none;
+  padding: 10px 20px;
+  font-weight: 800;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.owner-msg {
+  text-align: center;
+  margin-top: 12px;
+  color: #10b981;
+}
