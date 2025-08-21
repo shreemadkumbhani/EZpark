@@ -15,6 +15,7 @@ const ParkingLotSchema = new mongoose.Schema({
   },
   totalSlots: Number,
   availableSlots: Number,
+  carsParked: { type: Number, default: 0 },
 });
 
 // 🌍 Create a 2dsphere index for geo queries
