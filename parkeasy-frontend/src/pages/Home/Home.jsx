@@ -4,7 +4,6 @@ import "./Home.css";
 export default function Home() {
   return (
     <div className="home">
-
       <section className="hero">
         <div className="hero-content">
           <h2>Book Your Parking Slot Easily!</h2>
@@ -17,7 +16,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
       <section className="featured-section">
         <h3>Popular Parking Locations</h3>
         <div className="card-list">
