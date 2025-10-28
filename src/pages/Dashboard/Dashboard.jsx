@@ -1,18 +1,21 @@
+// Dashboard page for users to view and book nearby parking lots
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 
 export default function Dashboard() {
-  const [parkingLots, setParkingLots] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selectedLot, setSelectedLot] = useState(null);
-  const [bookingHour, setBookingHour] = useState("");
-  const [bookingMsg, setBookingMsg] = useState("");
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [flippedId, setFlippedId] = useState(null);
-  const [expand, setExpand] = useState(null); // { lot, style: {left,top,width,height}, rect }
+  // State variables for parking lots, loading, errors, booking, and UI
+  const [parkingLots, setParkingLots] = useState([]); // List of nearby parking lots
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(""); // Error message
+  const [selectedLot, setSelectedLot] = useState(null); // Currently selected lot for booking
+  const [bookingHour, setBookingHour] = useState(""); // Hour input for booking
+  const [bookingMsg, setBookingMsg] = useState(""); // Booking status message
+  const [bookingLoading, setBookingLoading] = useState(false); // Booking loading state
+  const [flippedId, setFlippedId] = useState(null); // ID of card currently flipped
+  const [expand, setExpand] = useState(null); // Expanding popup state
 
+  // Fetch nearby parking lots from backend using user's coordinates
   const fetchParkingLots = useCallback(async (coords) => {
     setLoading(true);
     setError("");
@@ -34,6 +37,7 @@ export default function Dashboard() {
     }
   }, []);
 
+  // Ask for user's location and load parking lots
   const askLocationAndLoad = useCallback(() => {
     if (!("geolocation" in navigator)) {
       setError("Geolocation is not supported by your browser.");
@@ -55,11 +59,13 @@ export default function Dashboard() {
     );
   }, [fetchParkingLots]);
 
+  // On mount, ask for location and load lots
   useEffect(() => {
     askLocationAndLoad();
   }, [askLocationAndLoad]);
 
   // Lock body scroll and optionally blur background when popup is open
+  // Lock body scroll when popup is open
   useEffect(() => {
     if (expand) {
       const prev = document.body.style.overflow;
@@ -71,12 +77,14 @@ export default function Dashboard() {
   }, [expand]);
 
   // Helper to format distance in meters/kilometers
+  // Format distance in meters or kilometers
   function formatDistance(m) {
     if (m < 1000) return `${Math.round(m)} m`;
     return `${(m / 1000).toFixed(2)} km`;
   }
 
   // Availability status without numbers
+  // Get availability status and color class for a parking lot
   function getAvailabilityStatus(lot) {
     const a = Number(lot.availableSlots || 0);
     const t = Number(lot.totalSlots || 0) || 1;
@@ -93,16 +101,25 @@ export default function Dashboard() {
   }
 
   // Book slot handler
+  // Book a slot for the selected parking lot
   async function handleBookSlot() {
     if (!selectedLot || !bookingHour) return;
     setBookingLoading(true);
     setBookingMsg("");
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.post(
         `http://localhost:8080/api/parkinglots/${selectedLot._id}/book`,
-        { hour: bookingHour }
+        { hour: bookingHour },
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
       );
       setBookingMsg("Slot booked successfully!");
+      // Signal other tabs/pages (History) to update immediately
+      try {
+        localStorage.setItem("bookings:refresh", "1");
+      } catch {
+        // ignore storage signaling errors
+      }
       // Update lot info in UI
       setParkingLots((lots) =>
         lots.map((l) => (l._id === selectedLot._id ? res.data.lot : l))
@@ -116,11 +133,13 @@ export default function Dashboard() {
   }
 
   // Flip a specific card
+  // Flip a specific card to show more details
   function toggleFlip(lotId) {
     setFlippedId((prev) => (prev === lotId ? null : lotId));
   }
 
   // Start expanding popup from the clicked card element
+  // Start expanding popup animation from the clicked card
   function startExpandFrom(el, lot) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -147,6 +166,7 @@ export default function Dashboard() {
     });
   }
 
+  // Close expanding popup (shrink back to card if visible)
   // Close expanding popup (shrink back to card if visible)
   function closeExpand() {
     if (!expand) return;
