@@ -1,8 +1,11 @@
+// Navigation bar component for ParkEasy app
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 export default function Navbar() {
+  // Check if user is logged in
   const isLoggedIn = !!localStorage.getItem("token");
+  // Get user info from localStorage
   const user = (() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null");
@@ -12,6 +15,7 @@ export default function Navbar() {
   })();
   const navigate = useNavigate();
 
+  // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -22,9 +26,11 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-brand">🚗 ParkEasy</div>
       <ul className="navbar-links">
+        {/* Always show Home link */}
         <li>
           <Link to="/">Home</Link>
         </li>
+        {/* Show Login/Register if not logged in */}
         {!isLoggedIn && (
           <>
             <li>
@@ -35,6 +41,7 @@ export default function Navbar() {
             </li>
           </>
         )}
+        {/* Show dashboard, history, owner links, and logout if logged in */}
         {isLoggedIn && (
           <>
             <li>
@@ -44,6 +51,7 @@ export default function Navbar() {
               <Link to="/booking-history">History</Link>
             </li>
             <li>
+              {/* Show Add Parking if owner, else Become Owner */}
               {user?.role === "owner" ? (
                 <Link to="/owner/register">Add Parking</Link>
               ) : (

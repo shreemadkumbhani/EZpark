@@ -1,3 +1,57 @@
+# EZpark
+
+This repository contains a full-stack parking booking app (frontend and backend).
+
+Quick start (Windows)
+
+1. Install Node.js (recommended: 18.x or 20.x LTS) and MongoDB.
+2. Clone the repository and open PowerShell or CMD at the project root.
+3. Copy example env and fill values:
+
+```powershell
+cd EZpark\parkeasy-backend
+copy .env.example .env
+# edit .env and set MONGO_URI and PORT if needed
+```
+
+4. Install dependencies and freeze them (lockfiles included):
+
+```powershell
+cd ..\..\
+npm install
+```
+
+5. Start both servers from project root:
+
+```powershell
+npm run dev
+```
+
+This runs backend (nodemon) and frontend (Vite) concurrently.
+
+If you prefer to run services separately:
+
+```powershell
+cd parkeasy-backend
+npm install
+npm run dev
+
+cd ..\parkeasy-frontend
+npm install
+npm run dev
+```
+
+Uploading to GitHub
+
+I prepared the repo for committing (added `.gitignore`, `package.json` at root) but did not push to your remote. To push to GitHub from this machine:
+
+```powershell
+git add .
+git commit -m "Prepare project for Windows: freeze deps, root scripts, map picker"
+git push origin main
+```
+
+If you want, I can attempt to create the commit and push for you now (requires your git credentials to be available in the environment).
 # 🚗 EZpark
 
 **EZpark** is a full-stack smart parking solution built with **React** and **Node.js**, designed to make parking management seamless in malls, public spaces, and commercial areas.

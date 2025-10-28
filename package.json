@@ -1,0 +1,12 @@
+{
+  "name": "ezpark",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix parkeasy-backend\" \"npm run dev --prefix parkeasy-frontend\"",
+    "start": "node parkeasy-backend/server.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

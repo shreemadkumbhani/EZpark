@@ -40,6 +40,38 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+.map-label {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.map-wrap {
+  height: 320px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.map {
+  height: 100%;
+  width: 100%;
+}
+.coords {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+.coords .use-location {
+  margin-left: auto;
+}
+.address {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+}
+.address legend {
+  padding: 0 6px;
+  color: #aaa;
+}
 .owner-submit {
   background: linear-gradient(180deg, #ff2e2e, #e60e0e);
   border: none;

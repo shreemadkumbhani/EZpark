@@ -2,9 +2,9 @@
 // Handles: fetch nearby lots, book slot, owner registration, become owner
 const express = require("express");
 const router = express.Router();
-const bookingsService = require("../services/bookingsService");
 const ParkingLot = require("../models/ParkingLot");
 const requireAuth = require("../middleware/authMiddleware");
+const bookingsService = require("../services/bookingsService");
 const User = require("../models/User");
 
 // GET /api/parkinglots?lat=...&lng=...
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 module.exports = router;
 
 // POST /api/parkinglots/:id/book
-// Book a slot at a parking lot and record the booking
+// Book a slot at a parking lot (decrements availableSlots, increments carsParked) and record booking
 router.post("/:id/book", requireAuth, async (req, res) => {
   const { id } = req.params;
   const { hour } = req.body;
@@ -57,25 +57,30 @@ router.post("/:id/book", requireAuth, async (req, res) => {
     lot.carsParked += 1;
     lot.availableSlots -= 1;
     await lot.save();
-    // Record booking in history
+
+    // Record booking in shared store so history shows it
     const duration = parseInt(hour, 10) || 1;
     const now = Date.now();
     const startTime = now;
     const endTime = now + duration * 3600000;
+    const slotNumber = lot.carsParked; // simplistic slot reference
+
     bookingsService.addBooking({
       userId: req.user.id,
+      lotId: lot._id?.toString?.() || String(lot._id),
       lotName: lot.name,
-      slot: lot.carsParked,
+      slot: slotNumber,
       time: now,
       startTime,
       endTime,
       price: duration * 10,
-      vehicle: req.user.vehicle || "",
-      latitude: lot.location.coordinates[1],
-      longitude: lot.location.coordinates[0],
+      vehicle: "",
+      latitude: lot.location?.coordinates?.[1],
+      longitude: lot.location?.coordinates?.[0],
       status: "Upcoming",
       review: "",
     });
+
     res.json({ message: "Slot booked!", lot });
   } catch (err) {
     res.status(500).json({ message: "Booking failed", error: err.message });
@@ -92,7 +97,7 @@ router.post("/", requireAuth, async (req, res) => {
         .status(403)
         .json({ message: "Only owners can register parking" });
     }
-    const { name, latitude, longitude, totalSlots } = req.body;
+    const { name, latitude, longitude, totalSlots, address } = req.body;
     // Validate required fields
     if (!name || latitude == null || longitude == null || !totalSlots) {
       return res.status(400).json({
@@ -106,6 +111,7 @@ router.post("/", requireAuth, async (req, res) => {
         type: "Point",
         coordinates: [parseFloat(longitude), parseFloat(latitude)],
       },
+      address: address || {},
       totalSlots: Number(totalSlots),
       availableSlots: Number(totalSlots),
     });
