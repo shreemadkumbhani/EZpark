@@ -2,7 +2,7 @@ const app = require("./app");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const PORT = 8080; // ✅ change here
+const PORT = process.env.PORT || 8080; // respect .env or fallback to 8080
 const MONGO_URI = process.env.MONGO_URI;
 
 const cors = require("cors");
