@@ -6,7 +6,13 @@ const PORT = process.env.PORT || 8080; // respect .env or fallback to 8080
 const MONGO_URI = process.env.MONGO_URI;
 
 const cors = require("cors");
-app.use(cors({ origin: "*" })); // or use your actual frontend port:5174
+const FRONTEND_URL = process.env.FRONTEND_URL;
+app.use(
+  cors({
+    origin: FRONTEND_URL ? [FRONTEND_URL] : "*",
+    credentials: true,
+  })
+);
 
 mongoose
   .connect(MONGO_URI)
