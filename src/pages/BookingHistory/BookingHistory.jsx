@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./BookingHistory.css";
-import axios from "axios";
+import api from "../../lib/api";
 import html2canvas from "html2canvas";
 
 // Helper to format date/time
@@ -46,10 +46,7 @@ export default function BookingHistory() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8080/api/bookings", {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      const res = await api.get("/api/bookings");
       setBookings(res.data.bookings || []);
     } catch (error) {
       console.error("Failed to fetch bookings", error);
@@ -101,10 +98,7 @@ export default function BookingHistory() {
     if (!window.confirm("Cancel this booking?")) return;
     try {
       setCancelling((s) => ({ ...s, [bookingId]: true }));
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/api/bookings/${bookingId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      await api.delete(`/api/bookings/${bookingId}`);
       // Refresh bookings after successful cancellation
       fetchBookings();
     } catch (error) {
@@ -120,12 +114,7 @@ export default function BookingHistory() {
   async function handleReviewById(bookingId, value) {
     if (!bookingId) return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:8080/api/bookings/${bookingId}/review`,
-        { review: value },
-        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
-      );
+      await api.patch(`/api/bookings/${bookingId}/review`, { review: value });
       // Refresh bookings after successful review submission
       fetchBookings();
       setReview((r) => ({ ...r, [bookingId]: "" }));

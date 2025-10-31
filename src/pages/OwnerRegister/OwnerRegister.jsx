@@ -1,6 +1,6 @@
 // Page for parking owners to register their parking lot
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./OwnerRegister.css";
@@ -33,7 +33,7 @@ export default function OwnerRegister() {
       return "user";
     }
   });
-  const token = localStorage.getItem("token"); // Auth token
+  // Auth token is attached via API interceptor
 
   // On mount, try to auto-detect current location for map center
   useEffect(() => {
@@ -54,24 +54,20 @@ export default function OwnerRegister() {
     setLoading(true);
     try {
       if (!position) throw new Error("Please select a location on the map");
-      await axios.post(
-        "http://localhost:8080/api/parkinglots",
-        {
-          name,
-          latitude: Number(position.lat),
-          longitude: Number(position.lng),
-          totalSlots: Number(totalSlots),
-          address: {
-            line1,
-            line2,
-            landmark,
-            city,
-            state: stateName,
-            pincode,
-          },
+      await api.post("/api/parkinglots", {
+        name,
+        latitude: Number(position.lat),
+        longitude: Number(position.lng),
+        totalSlots: Number(totalSlots),
+        address: {
+          line1,
+          line2,
+          landmark,
+          city,
+          state: stateName,
+          pincode,
         },
-        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
-      );
+      });
       setMsg("Parking lot registered successfully!");
       setName("");
       setTotalSlots("");
@@ -92,11 +88,7 @@ export default function OwnerRegister() {
   async function becomeOwner() {
     setMsg("");
     try {
-      await axios.post(
-        "http://localhost:8080/api/parkinglots/become-owner",
-        {},
-        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
-      );
+      await api.post("/api/parkinglots/become-owner", {});
       // Update user role in localStorage
       const user = JSON.parse(localStorage.getItem("user") || "null");
       if (user) {
