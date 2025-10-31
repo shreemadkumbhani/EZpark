@@ -51,28 +51,7 @@ git commit -m "Prepare project for Windows: freeze deps, root scripts, map picke
 git push origin main
 ```
 
-## Deploying backend on Render
-
-1. Ensure you have a cloud MongoDB (e.g., MongoDB Atlas). Copy the SRV connection string.
-2. Render will detect `render.yaml` automatically when you choose Blueprint > this repo.
-3. In the Render service environment, set:
-   - MONGO_URI = your Atlas connection string
-   - JWT_SECRET = a strong secret
-   - FRONTEND_URL = your frontend origin (e.g., http://localhost:5173 or your hosted URL)
-   - NODE_VERSION = 20 (optional; already in the blueprint)
-   - (Frontend) VITE_API_BASE = the Render backend URL (e.g., https://your-api.onrender.com)
-4. Deploy. The app listens on `process.env.PORT` provided by Render automatically.
-5. If you see `ECONNREFUSED 127.0.0.1:27017`, it means you're pointing to a local MongoDB. Switch to Atlas.
-
-## Frontend production config
-
-Create `parkeasy-frontend/.env.production` to point the app to your hosted backend:
-
-VITE_API_BASE=https://your-api.onrender.com
-
-And set `FRONTEND_URL` in the backend environment to your frontend's origin so CORS allows it.
 If you want, I can attempt to create the commit and push for you now (requires your git credentials to be available in the environment).
-
 # 🚗 EZpark
 
 **EZpark** is a full-stack smart parking solution built with **React** and **Node.js**, designed to make parking management seamless in malls, public spaces, and commercial areas.
@@ -81,25 +60,25 @@ If you want, I can attempt to create the commit and push for you now (requires y
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React, Tailwind CSS
-- **Backend:** Node.js, Express.js
-- **Authentication:** Firebase Auth
-- **Database:** MongoDB (Atlas)
-- **Payments:** Razorpay
+- **Frontend:** React, Tailwind CSS  
+- **Backend:** Node.js, Express.js  
+- **Authentication:** Firebase Auth  
+- **Database:** MongoDB (Atlas)  
+- **Payments:** Razorpay  
 - **Geolocation & Maps:** HTML Geolocation API, Map API integration
 
 ---
 
 ## 📦 Features
 
-- 🔐 User Registration & Login (JWT Authentication)
-- 📍 Live Location Detection
-- 🅿️ Nearby Parking Slot Suggestion
-- 🎟️ Advance Parking Slot Booking
-- 💳 Online Payment Integration
-- 📅 Date & Time-Based Slot Reservation
-- 🗺️ Admin Dashboard for Lot Management
-- 📈 Total Working Hours for Attendants
+- 🔐 User Registration & Login (JWT Authentication)  
+- 📍 Live Location Detection  
+- 🅿️ Nearby Parking Slot Suggestion  
+- 🎟️ Advance Parking Slot Booking  
+- 💳 Online Payment Integration  
+- 📅 Date & Time-Based Slot Reservation  
+- 🗺️ Admin Dashboard for Lot Management  
+- 📈 Total Working Hours for Attendants  
 - 📜 Terms & Conditions on Booking
 
 ---
@@ -158,9 +137,9 @@ EZpark/
 
 ## 🧪 Future Enhancements
 
-- Push Notifications on Slot Status
-- QR Code-Based Check-in/Checkout
-- Admin Analytics Dashboard
+- Push Notifications on Slot Status  
+- QR Code-Based Check-in/Checkout  
+- Admin Analytics Dashboard  
 - Vehicle License Plate Recognition
 
 ---

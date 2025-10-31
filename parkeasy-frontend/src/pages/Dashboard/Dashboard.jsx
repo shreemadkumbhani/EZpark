@@ -1,6 +1,6 @@
 // Dashboard page for users to view and book nearby parking lots
 import { useEffect, useState, useCallback } from "react";
-import api from "../../lib/api";
+import axios from "axios";
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -20,8 +20,10 @@ export default function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/api/parkinglots", {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8080/api/parkinglots", {
         params: { lat: coords.latitude, lng: coords.longitude },
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setParkingLots(res.data.parkingLots || []);
     } catch (err) {
@@ -105,9 +107,12 @@ export default function Dashboard() {
     setBookingLoading(true);
     setBookingMsg("");
     try {
-      const res = await api.post(`/api/parkinglots/${selectedLot._id}/book`, {
-        hour: bookingHour,
-      });
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `http://localhost:8080/api/parkinglots/${selectedLot._id}/book`,
+        { hour: bookingHour },
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
       setBookingMsg("Slot booked successfully!");
       // Signal other tabs/pages (History) to update immediately
       try {

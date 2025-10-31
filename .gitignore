@@ -9,3 +9,4 @@ dist/
 /.idea/
 /*.local
 npm-debug.log*
+.env.example
