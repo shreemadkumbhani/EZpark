@@ -26,8 +26,8 @@ export default function Register() {
     setSuccess("");
 
     // Simple client-side validation for quick feedback
-  // Gmail-only validation
-  const emailRegex = /^[^\s@]+@gmail\.com$/i;
+    // Gmail-only validation
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
     if (!form.name || !form.email || !form.password) {
       setError("Name, email, and password are required");
       return;

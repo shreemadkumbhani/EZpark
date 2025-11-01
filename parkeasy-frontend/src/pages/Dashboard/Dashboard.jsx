@@ -39,28 +39,25 @@ export default function Dashboard() {
   const manualCenterRef = useRef(false);
 
   // Build a Nominatim search URL with optional map bias
-  const buildSearchUrl = useCallback(
-    (text, limit = 1) => {
-      const map = mapInstanceRef.current;
-      let base = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=${limit}&q=${encodeURIComponent(
-        text
-      )}`;
-      if (map) {
-        try {
-          const b = map.getBounds();
-          const south = b.getSouth();
-          const west = b.getWest();
-          const north = b.getNorth();
-          const east = b.getEast();
-          base += `&viewbox=${west},${north},${east},${south}&bounded=1`;
-        } catch (e) {
-          void e;
-        }
+  const buildSearchUrl = useCallback((text, limit = 1) => {
+    const map = mapInstanceRef.current;
+    let base = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=${limit}&q=${encodeURIComponent(
+      text
+    )}`;
+    if (map) {
+      try {
+        const b = map.getBounds();
+        const south = b.getSouth();
+        const west = b.getWest();
+        const north = b.getNorth();
+        const east = b.getEast();
+        base += `&viewbox=${west},${north},${east},${south}&bounded=1`;
+      } catch (e) {
+        void e;
       }
-      return base;
-    },
-    []
-  );
+    }
+    return base;
+  }, []);
 
   // Query backend for parking lot suggestions by name/address
   const fetchLotSuggestions = useCallback(async (text, limit = 5) => {
@@ -322,7 +319,10 @@ export default function Dashboard() {
       if (lotSuggestions.length > 0) {
         const s = lotSuggestions[0];
         if (s.lat != null && s.lon != null) {
-          coords = { latitude: parseFloat(s.lat), longitude: parseFloat(s.lon) };
+          coords = {
+            latitude: parseFloat(s.lat),
+            longitude: parseFloat(s.lon),
+          };
           centerLabel = s.display_name;
           // optionally preselect the lot
           setSelectedLot(s.lot);

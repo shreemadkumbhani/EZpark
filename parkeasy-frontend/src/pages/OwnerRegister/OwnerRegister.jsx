@@ -117,62 +117,66 @@ export default function OwnerRegister() {
   const pinIconRef = useRef(null);
 
   // Reverse geocode to fill address fields automatically based on map pin
-  const reverseGeocodeAndFill = useCallback(async (lat, lng) => {
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
-          lat
-        )}&lon=${encodeURIComponent(lng)}&addressdetails=1`,
-        { headers: { Accept: "application/json" } }
-      );
-      const data = await res.json();
-      const addr = data?.address || {};
-      // Pincode
-      if (addr?.postcode) setPincode(String(addr.postcode).slice(0, 6));
-      // City/State
-      const cityGuess = addr.city || addr.town || addr.village || addr.hamlet || "";
-      if (cityGuess) setCity(cityGuess);
-      if (addr.state) setStateName(addr.state);
+  const reverseGeocodeAndFill = useCallback(
+    async (lat, lng) => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+            lat
+          )}&lon=${encodeURIComponent(lng)}&addressdetails=1`,
+          { headers: { Accept: "application/json" } }
+        );
+        const data = await res.json();
+        const addr = data?.address || {};
+        // Pincode
+        if (addr?.postcode) setPincode(String(addr.postcode).slice(0, 6));
+        // City/State
+        const cityGuess =
+          addr.city || addr.town || addr.village || addr.hamlet || "";
+        if (cityGuess) setCity(cityGuess);
+        if (addr.state) setStateName(addr.state);
 
-      // Derive Address Line 1 and 2 conservatively (only fill if empty)
-      // Line 1: house/building + road
-      const house = addr.house_number || addr.building || "";
-      const road =
-        addr.road ||
-        addr.pedestrian ||
-        addr.footway ||
-        addr.residential ||
-        addr.path ||
-        addr.cycleway ||
-        addr.service ||
-        "";
-      const line1Candidate = [house, road].filter(Boolean).join(" ") || road;
-      if (!line1 && line1Candidate) setLine1(line1Candidate);
+        // Derive Address Line 1 and 2 conservatively (only fill if empty)
+        // Line 1: house/building + road
+        const house = addr.house_number || addr.building || "";
+        const road =
+          addr.road ||
+          addr.pedestrian ||
+          addr.footway ||
+          addr.residential ||
+          addr.path ||
+          addr.cycleway ||
+          addr.service ||
+          "";
+        const line1Candidate = [house, road].filter(Boolean).join(" ") || road;
+        if (!line1 && line1Candidate) setLine1(line1Candidate);
 
-      // Line 2: neighbourhood/suburb/locality
-      const line2Candidate =
-        addr.neighbourhood ||
-        addr.suburb ||
-        addr.quarter ||
-        addr.city_district ||
-        addr.locality ||
-        addr.village ||
-        "";
-      if (!line2 && line2Candidate) setLine2(line2Candidate);
+        // Line 2: neighbourhood/suburb/locality
+        const line2Candidate =
+          addr.neighbourhood ||
+          addr.suburb ||
+          addr.quarter ||
+          addr.city_district ||
+          addr.locality ||
+          addr.village ||
+          "";
+        if (!line2 && line2Candidate) setLine2(line2Candidate);
 
-      // Landmark: prefer a named place if provided
-      const landmarkCandidate =
-        data?.name ||
-        addr.attraction ||
-        addr.amenity ||
-        addr.shop ||
-        addr.public_building ||
-        "";
-      if (!landmark && landmarkCandidate) setLandmark(landmarkCandidate);
-    } catch {
-      // Ignore reverse geocode errors; user can type pincode manually
-    }
-  }, [line1, line2, landmark]);
+        // Landmark: prefer a named place if provided
+        const landmarkCandidate =
+          data?.name ||
+          addr.attraction ||
+          addr.amenity ||
+          addr.shop ||
+          addr.public_building ||
+          "";
+        if (!landmark && landmarkCandidate) setLandmark(landmarkCandidate);
+      } catch {
+        // Ignore reverse geocode errors; user can type pincode manually
+      }
+    },
+    [line1, line2, landmark]
+  );
   useEffect(() => {
     if (!mapRef.current) {
       const center = position
@@ -194,7 +198,9 @@ export default function OwnerRegister() {
         '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">' +
         '<path d="M12.5 0C5.6 0 0 5.6 0 12.5 0 22 12.5 41 12.5 41S25 22 25 12.5C25 5.6 19.4 0 12.5 0z" fill="#ea4335"/>' +
         '<circle cx="12.5" cy="12.5" r="5" fill="#fff"/></svg>';
-      const pinUrl = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(pinSvg)}`;
+      const pinUrl = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+        pinSvg
+      )}`;
       pinIconRef.current = L.icon({
         iconUrl: pinUrl,
         iconSize: [25, 41],
@@ -260,7 +266,9 @@ export default function OwnerRegister() {
     const q = parts.join(", ");
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&q=${encodeURIComponent(q)}`,
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&q=${encodeURIComponent(
+          q
+        )}`,
         { headers: { Accept: "application/json" } }
       );
       const data = await res.json();
@@ -292,7 +300,11 @@ export default function OwnerRegister() {
       const postcode = best?.address?.postcode;
       if (postcode) setPincode(String(postcode).slice(0, 6));
       // Also fill city/state when available from forward geocode
-      const fwdCity = best?.address?.city || best?.address?.town || best?.address?.village || best?.address?.hamlet;
+      const fwdCity =
+        best?.address?.city ||
+        best?.address?.town ||
+        best?.address?.village ||
+        best?.address?.hamlet;
       if (fwdCity) setCity(fwdCity);
       if (best?.address?.state) setStateName(best.address.state);
       // Try to seed address lines from forward geocode as well (do not overwrite if user typed)
@@ -318,7 +330,13 @@ export default function OwnerRegister() {
         fwd.village ||
         "";
       if (!line2 && l2) setLine2(l2);
-      const lm = best?.name || fwd.attraction || fwd.amenity || fwd.shop || fwd.public_building || "";
+      const lm =
+        best?.name ||
+        fwd.attraction ||
+        fwd.amenity ||
+        fwd.shop ||
+        fwd.public_building ||
+        "";
       if (!landmark && lm) setLandmark(lm);
       else reverseGeocodeAndFill(lat, lng);
       setMsg("Centered to searched address");
