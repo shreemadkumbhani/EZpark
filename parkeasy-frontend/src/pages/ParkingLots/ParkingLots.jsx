@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../config";
 import "./ParkingLots.css";
 
 export default function ParkingLots() {
@@ -8,7 +9,7 @@ export default function ParkingLots() {
   useEffect(() => {
     const fetchLots = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/parkinglots");
+        const res = await axios.get(`${API_BASE}/api/parkinglots`);
         setLots(res.data.parkingLots || []);
       } catch (err) {
         console.error("Failed to fetch parking lots:", err.message);

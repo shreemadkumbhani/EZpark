@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../config";
 import "./Login.css";
 
 export default function ForgotPassword() {
@@ -15,7 +16,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:8080/api/auth/forgot-password",
+        `${API_BASE}/api/auth/forgot-password`,
         { email }
       );
       const baseMsg =
@@ -53,6 +54,8 @@ export default function ForgotPassword() {
           className="login-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          pattern="^[^\s@]+@gmail\.com$"
+          title="Please use your Gmail address (e.g., name@gmail.com)"
           required
         />
         <button type="submit" className="login-button" disabled={loading}>

@@ -18,6 +18,93 @@
   letter-spacing: 0.4px;
 }
 
+/* Controls row */
+.controls-row {
+  max-width: 1100px;
+  margin: 0 auto 14px auto;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  gap: 10px;
+  align-items: center;
+}
+.search-input {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.small-button {
+  background: #1f1f1f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.toggle {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+.last-updated {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: right;
+}
+
+/* Map */
+.map-wrap {
+  max-width: 1100px;
+  margin: 0 auto 16px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.55);
+}
+#dashboard-map {
+  width: 100%;
+  height: 340px;
+}
+
+/* Progress bar for occupancy */
+.bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: #1f1f1f;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.bar-fill {
+  height: 100%;
+  transition: width 0.25s ease;
+}
+.bar-green {
+  background: #22c55e;
+}
+.bar-lightgreen {
+  background: #10b981;
+}
+.bar-lime {
+  background: #84cc16;
+}
+.bar-yellow {
+  background: #eab308;
+}
+.bar-amber {
+  background: #f59e0b;
+}
+.bar-orange {
+  background: #f97316;
+}
+.bar-red {
+  background: #ef4444;
+}
+.bar-darkred {
+  background: #dc2626;
+}
+
 .dashboard-content.blurred {
   filter: blur(6px) saturate(0.9);
   transition: filter 0.25s ease;
@@ -118,6 +205,11 @@
   gap: 6px;
   padding: 16px 8px;
   height: 100%;
+}
+
+.slot-progress {
+  width: 100%;
+  margin-top: 6px;
 }
 
 /* Status pill on the card front */
@@ -266,6 +358,27 @@
 }
 
 @media (max-width: 760px) {
+  .dashboard-container {
+    padding: 16px 12px;
+  }
+  .dashboard-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .controls-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .controls-row .search-input {
+    grid-column: 1 / -1;
+  }
+  .controls-row .last-updated {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+  #dashboard-map {
+    height: 260px;
+  }
   .slot-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }

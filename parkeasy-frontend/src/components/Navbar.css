@@ -5,6 +5,9 @@
   padding: 12px 24px;
   background-color: #000000;
   color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .navbar-brand {
@@ -16,6 +19,9 @@
   list-style: none;
   display: flex;
   gap: 20px;
+}
+.navbar-links.desktop {
+  display: flex;
 }
 
 .navbar-links a {
@@ -38,4 +44,54 @@
 
 .logout-btn:hover {
   text-decoration: underline;
+}
+
+/* Mobile menu button */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Mobile dropdown */
+.mobile-menu {
+  position: absolute;
+  right: 12px;
+  top: 56px;
+  background: #0f0f0f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+.mobile-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+}
+.mobile-menu li {
+  padding: 8px 10px;
+}
+.mobile-menu a,
+.mobile-menu .logout-btn {
+  color: #fff;
+  text-decoration: none;
+}
+.mobile-menu a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive: collapse links into hamburger */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 14px;
+  }
+  .navbar-links.desktop {
+    display: none;
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
 }

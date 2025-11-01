@@ -10,6 +10,29 @@ exports.register = async (req, res) => {
   try {
     // Get user details from request body
     const { name, email, phone, password } = req.body;
+    // Basic validations
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Name, email, and password are required" });
+    }
+    // Restrict to Gmail addresses only
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
+    if (!emailRegex.test(String(email).toLowerCase())) {
+      return res
+        .status(400)
+        .json({ message: "Email must be a Gmail address (@gmail.com)" });
+    }
+    if (String(password).length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+    if (phone && !/^\d{10}$/.test(String(phone))) {
+      return res
+        .status(400)
+        .json({ message: "Phone number must be 10 digits" });
+    }
     // Check if user already exists
     const existing = await User.findOne({ email });
     if (existing)

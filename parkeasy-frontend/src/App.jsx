@@ -10,6 +10,7 @@ import ResetPassword from "./pages/Login/ResetPassword";
 import BookingHistory from "./pages/BookingHistory/BookingHistory";
 import Home from "./pages/Home/Home";
 import OwnerRegister from "./pages/OwnerRegister/OwnerRegister";
+import About from "./pages/About/About";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -38,6 +39,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/owner/register" element={<OwnerRegister />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </Router>
   );

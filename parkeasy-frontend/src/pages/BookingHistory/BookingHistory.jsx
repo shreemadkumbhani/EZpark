@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./BookingHistory.css";
 import axios from "axios";
+import { API_BASE } from "../../config";
 import html2canvas from "html2canvas";
 
 // Helper to format date/time
@@ -47,7 +48,7 @@ export default function BookingHistory() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:8080/api/bookings", {
+      const res = await axios.get(`${API_BASE}/api/bookings`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setBookings(res.data.bookings || []);
@@ -102,7 +103,7 @@ export default function BookingHistory() {
     try {
       setCancelling((s) => ({ ...s, [bookingId]: true }));
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/api/bookings/${bookingId}`, {
+      await axios.delete(`${API_BASE}/api/bookings/${bookingId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       // Refresh bookings after successful cancellation
@@ -122,7 +123,7 @@ export default function BookingHistory() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:8080/api/bookings/${bookingId}/review`,
+        `${API_BASE}/api/bookings/${bookingId}/review`,
         { review: value },
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
       );

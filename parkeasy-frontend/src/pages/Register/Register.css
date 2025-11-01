@@ -55,3 +55,18 @@
 .register-button:hover {
   background-color: #b00610;
 }
+
+/* Inline feedback messages */
+.register-error {
+  color: #ff4d4f;
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.register-success {
+  color: #34d399; /* green-400 */
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+}

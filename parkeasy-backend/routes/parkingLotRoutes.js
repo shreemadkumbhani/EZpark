@@ -40,6 +40,46 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/parkinglots/search?q=...
+// Text search parking lots by name and address fields (case-insensitive)
+router.get("/search", async (req, res) => {
+  try {
+    const q = String(req.query.q || "").trim();
+    if (!q) return res.json({ parkingLots: [] });
+    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(esc, "i");
+    const lots = await ParkingLot.find(
+      {
+        $or: [
+          { name: re },
+          { "address.line1": re },
+          { "address.line2": re },
+          { "address.landmark": re },
+          { "address.city": re },
+          { "address.state": re },
+          { "address.pincode": re },
+        ],
+      },
+      // projection: only fields we need for centering and display
+      {
+        name: 1,
+        location: 1,
+        address: 1,
+        totalSlots: 1,
+        availableSlots: 1,
+        carsParked: 1,
+      }
+    )
+      .limit(10)
+      .lean();
+    return res.json({ parkingLots: lots || [] });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error searching parking lots", error: err.message });
+  }
+});
+
 module.exports = router;
 
 // POST /api/parkinglots/:id/book
