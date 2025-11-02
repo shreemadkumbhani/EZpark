@@ -39,6 +39,26 @@ export default function Dashboard() {
   const searchIconRef = useRef(null);
   const manualCenterRef = useRef(false);
 
+  // Cross-device precise dropdown position using visualViewport
+  const computeSugPos = useCallback(() => {
+    const el = searchInputRef.current;
+    if (!el) return { left: 0, top: 0, width: 0 };
+    const r = el.getBoundingClientRect();
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    const viewportW = vv?.width ?? window.innerWidth;
+    const viewportH = vv?.height ?? window.innerHeight;
+    const offsetLeft = vv?.offsetLeft ?? 0;
+    const offsetTop = vv?.offsetTop ?? 0;
+    const maxW = Math.min(640, viewportW - 16);
+    const width = Math.min(Math.round(r.width), maxW);
+    let left = Math.round(r.left - offsetLeft + (r.width > width ? (r.width - width) / 2 : 0));
+    left = Math.max(8, Math.min(left, Math.round(viewportW - width - 8)));
+    let top = Math.round(r.bottom - offsetTop + 6);
+    const maxListH = 240 + 8;
+    if (top + maxListH > viewportH) top = Math.max(8, viewportH - maxListH);
+    return { left, top, width };
+  }, []);
+
   // Build a Nominatim search URL with optional map bias
   const buildSearchUrl = useCallback((text, limit = 1) => {
     const map = mapInstanceRef.current;
@@ -411,17 +431,7 @@ export default function Dashboard() {
         setSuggestions(merged);
         const has = merged.length > 0;
         setShowSuggestions(has);
-        if (has) {
-          const el = searchInputRef.current;
-          if (el) {
-            const r = el.getBoundingClientRect();
-            setSugPos({
-              left: Math.round(r.left + window.scrollX),
-              top: Math.round(r.bottom + window.scrollY + 6),
-              width: Math.round(r.width),
-            });
-          }
-        }
+        if (has) setSugPos(computeSugPos());
       } catch (e) {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -429,29 +439,25 @@ export default function Dashboard() {
       }
     }, 400);
     return () => clearTimeout(id);
-  }, [query, buildSearchUrl, fetchLotSuggestions]);
+  }, [query, buildSearchUrl, fetchLotSuggestions, computeSugPos]);
 
   // Keep dropdown aligned while it’s open (resize/scroll)
   useEffect(() => {
     if (!showSuggestions) return;
-    function updatePos() {
-      const el = searchInputRef.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      setSugPos({
-        left: Math.round(r.left + window.scrollX),
-        top: Math.round(r.bottom + window.scrollY + 6),
-        width: Math.round(r.width),
-      });
-    }
+    const updatePos = () => setSugPos(computeSugPos());
     updatePos();
     window.addEventListener("resize", updatePos);
     window.addEventListener("scroll", updatePos, true);
+    const vv = window.visualViewport;
+    vv?.addEventListener("resize", updatePos);
+    vv?.addEventListener("scroll", updatePos);
     return () => {
       window.removeEventListener("resize", updatePos);
       window.removeEventListener("scroll", updatePos, true);
+      vv?.removeEventListener("resize", updatePos);
+      vv?.removeEventListener("scroll", updatePos);
     };
-  }, [showSuggestions]);
+  }, [showSuggestions, computeSugPos]);
 
   // When a suggestion is clicked
   const pickSuggestion = useCallback(
@@ -681,15 +687,7 @@ export default function Dashboard() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             onFocus={() => {
               if (suggestions.length > 0) setShowSuggestions(true);
-              const el = searchInputRef.current;
-              if (el) {
-                const r = el.getBoundingClientRect();
-                setSugPos({
-                  left: Math.round(r.left + window.scrollX),
-                  top: Math.round(r.bottom + window.scrollY + 6),
-                  width: Math.round(r.width),
-                });
-              }
+              setSugPos(computeSugPos());
             }}
             onBlur={() => {
               // small delay so click can register before list hides
