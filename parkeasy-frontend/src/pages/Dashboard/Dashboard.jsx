@@ -26,8 +26,10 @@ export default function Dashboard() {
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sugPos, setSugPos] = useState({ left: 0, top: 0, width: 0 });
   const [lastUpdated, setLastUpdated] = useState(null);
   const mapRef = useRef(null);
+  const searchInputRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
   const currentCoordsRef = useRef(DEFAULT_COORDS);
@@ -649,11 +651,22 @@ export default function Dashboard() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             onFocus={() => {
               if (suggestions.length > 0) setShowSuggestions(true);
+              // ensure dropdown is aligned when focusing
+              const el = searchInputRef.current;
+              if (el) {
+                const r = el.getBoundingClientRect();
+                setSugPos({
+                  left: Math.round(r.left + window.scrollX),
+                  top: Math.round(r.bottom + window.scrollY + 6),
+                  width: Math.round(r.width),
+                });
+              }
             }}
             onBlur={() => {
               // small delay so click can register before list hides
               setTimeout(() => setShowSuggestions(false), 120);
             }}
+            ref={searchInputRef}
           />
           <button className="small-button" onClick={handleSearch}>
             Search
@@ -671,15 +684,17 @@ export default function Dashboard() {
         {showSuggestions && suggestions.length > 0 && (
           <div
             style={{
-              position: "absolute",
+              position: "fixed",
+              left: sugPos.left,
+              top: sugPos.top,
+              width: sugPos.width,
               background: "#fff",
               border: "1px solid #e5e7eb",
               borderRadius: 6,
-              marginTop: 6,
               zIndex: 1000,
               maxHeight: 240,
               overflowY: "auto",
-              width: "min(92vw, 640px)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
             }}
           >
             {suggestions.map((s) => (
@@ -704,6 +719,7 @@ export default function Dashboard() {
         {notice && !error && (
           <p style={{ color: "#2563eb", marginBottom: 12 }}>{notice}</p>
         )}
+
 
         {loading && (
           <div className="loading-wrap">
@@ -756,10 +772,7 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div
-                              className="bar"
-                              title={`${percentage}% filled`}
-                            >
+                            <div className="bar" title={`${percentage}% filled`}>
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
@@ -769,9 +782,7 @@ export default function Dashboard() {
                         })()}
                       </div>
                     </div>
-                    <div className={`status-pill ${status.cls}`}>
-                      {status.label}
-                    </div>
+                    <div className={`status-pill ${status.cls}`}>{status.label}</div>
                   </div>
                   <div className="slot-back">
                     <div className="slot-back-header">
@@ -791,10 +802,7 @@ export default function Dashboard() {
                           const r = getOccupancyRatio(lot);
                           const percentage = Math.round(r * 100);
                           return (
-                            <div
-                              className="bar"
-                              title={`${percentage}% filled`}
-                            >
+                            <div className="bar" title={`${percentage}% filled`}>
                               <div
                                 className={`bar-fill ${barClassForRatio(r)}`}
                                 style={{ width: `${percentage}%` }}
