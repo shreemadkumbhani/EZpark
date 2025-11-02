@@ -700,29 +700,20 @@ export default function Dashboard() {
 
           {showSuggestions && suggestions.length > 0 && (
             <div
+              className="sug-list"
               style={{
                 position: "fixed",
                 left: sugPos.left,
                 top: sugPos.top,
                 width: sugPos.width,
-                background: "#fff",
-                border: "1px solid #e5e7eb",
-                borderRadius: 6,
                 zIndex: 1000,
-                maxHeight: 240,
-                overflowY: "auto",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
               }}
             >
               {suggestions.map((s) => (
                 <div
                   key={`${s.place_id}`}
+                  className="sug-item"
                   onClick={() => pickSuggestion(s)}
-                  style={{
-                    padding: "8px 12px",
-                    cursor: "pointer",
-                    borderBottom: "1px solid #f3f4f6",
-                  }}
                   onMouseDown={(e) => e.preventDefault()}
                 >
                   {s.display_name}
