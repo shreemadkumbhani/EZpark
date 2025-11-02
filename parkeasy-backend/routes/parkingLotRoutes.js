@@ -18,6 +18,11 @@ router.get("/", async (req, res) => {
   }
 
   try {
+    // Allow optional radius in meters but cap strictly to 2000m
+    let radius = parseInt(req.query.radius, 10);
+    if (Number.isNaN(radius) || radius <= 0) radius = 2000;
+    // Enforce hard cap at 2000m (2km)
+    radius = Math.min(radius, 2000);
     // Use $near query to find lots sorted by distance
     const lots = await ParkingLot.find({
       location: {
@@ -26,7 +31,7 @@ router.get("/", async (req, res) => {
             type: "Point",
             coordinates: [parseFloat(lng), parseFloat(lat)],
           },
-          $maxDistance: 5000,
+          $maxDistance: radius,
         },
       },
     });
@@ -46,21 +51,33 @@ router.get("/search", async (req, res) => {
   try {
     const q = String(req.query.q || "").trim();
     if (!q) return res.json({ parkingLots: [] });
-    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(esc, "i");
+
+    // Tokenize query and build prefix/initials-friendly regexes
+    const tokens = q
+      .split(/\s+/)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const tokenRegexes = tokens.map((t) => new RegExp(`\\b${esc(t)}`, "i"));
+
+    // Build an $and with $or across fields so every token appears in at least one field
+    const tokenClauses = tokenRegexes.map((re) => ({
+      $or: [
+        { name: re },
+        { "address.line1": re },
+        { "address.line2": re },
+        { "address.landmark": re },
+        { "address.city": re },
+        { "address.state": re },
+        { "address.pincode": re },
+      ],
+    }));
+
+    const query = tokenClauses.length ? { $and: tokenClauses } : {};
+
     const lots = await ParkingLot.find(
-      {
-        $or: [
-          { name: re },
-          { "address.line1": re },
-          { "address.line2": re },
-          { "address.landmark": re },
-          { "address.city": re },
-          { "address.state": re },
-          { "address.pincode": re },
-        ],
-      },
-      // projection: only fields we need for centering and display
+      query,
       {
         name: 1,
         location: 1,

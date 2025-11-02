@@ -26,7 +26,6 @@ export default function Dashboard() {
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -127,7 +126,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE}/api/parkinglots`, {
-        params: { lat: coords.latitude, lng: coords.longitude },
+        params: { lat: coords.latitude, lng: coords.longitude, radius: 2000 },
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setParkingLots(res.data.parkingLots || []);
@@ -184,14 +183,13 @@ export default function Dashboard() {
     askLocationAndLoad();
   }, [askLocationAndLoad]);
 
-  // Auto refresh at intervals
+  // Auto refresh at intervals (always on)
   useEffect(() => {
-    if (!autoRefresh) return;
     const id = setInterval(() => {
       fetchParkingLots(currentCoordsRef.current);
     }, 15000);
     return () => clearInterval(id);
-  }, [autoRefresh, fetchParkingLots]);
+  }, [fetchParkingLots]);
 
   // Initialize map once
   useEffect(() => {
@@ -381,7 +379,7 @@ export default function Dashboard() {
   // Fetch suggestions as the user types (debounced)
   useEffect(() => {
     const q = query.trim();
-    if (q.length < 3) {
+    if (q.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -401,7 +399,15 @@ export default function Dashboard() {
           })(),
           fetchLotSuggestions(q, 5),
         ]);
-        const merged = [...lotData, ...geoData];
+        // Merge and de-duplicate
+        const merged = [];
+        const seen = new Set();
+        [...lotData, ...geoData].forEach((s) => {
+          const key = s.place_id || `${s.lat},${s.lon}`;
+          if (!key || seen.has(key)) return;
+          seen.add(key);
+          merged.push(s);
+        });
         setSuggestions(merged);
         setShowSuggestions(merged.length > 0);
       } catch (e) {
@@ -641,6 +647,13 @@ export default function Dashboard() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowSuggestions(true);
+            }}
+            onBlur={() => {
+              // small delay so click can register before list hides
+              setTimeout(() => setShowSuggestions(false), 120);
+            }}
           />
           <button className="small-button" onClick={handleSearch}>
             Search
@@ -649,14 +662,7 @@ export default function Dashboard() {
             Use My Location
           </button>
           {searching && <span style={{ marginLeft: 8 }}>Searching…</span>}
-          <label className="toggle">
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-            />
-            Auto-refresh
-          </label>
+          {/* Auto-refresh is now permanent; toggle removed */}
           <div className="last-updated">
             {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : ""}
           </div>
@@ -692,7 +698,6 @@ export default function Dashboard() {
             ))}
           </div>
         )}
-
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
         </div>
