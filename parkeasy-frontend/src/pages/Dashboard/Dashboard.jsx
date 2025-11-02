@@ -26,7 +26,6 @@ export default function Dashboard() {
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [sugPos, setSugPos] = useState({ left: 0, top: 0, width: 0 });
   const [lastUpdated, setLastUpdated] = useState(null);
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -643,6 +642,7 @@ export default function Dashboard() {
       <div className={`dashboard-content${expand ? " blurred" : ""}`}>
         <h2 className="dashboard-title">📍 Park Nearby with ParkEasy</h2>
         <div className="controls-row">
+          <div className="search-wrap">
           <input
             className="search-input"
             placeholder="Search a location (city, address)"
@@ -651,16 +651,6 @@ export default function Dashboard() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             onFocus={() => {
               if (suggestions.length > 0) setShowSuggestions(true);
-              // ensure dropdown is aligned when focusing
-              const el = searchInputRef.current;
-              if (el) {
-                const r = el.getBoundingClientRect();
-                setSugPos({
-                  left: Math.round(r.left + window.scrollX),
-                  top: Math.round(r.bottom + window.scrollY + 6),
-                  width: Math.round(r.width),
-                });
-              }
             }}
             onBlur={() => {
               // small delay so click can register before list hides
@@ -668,6 +658,40 @@ export default function Dashboard() {
             }}
             ref={searchInputRef}
           />
+
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: "calc(100% + 6px)",
+                background: "#fff",
+                border: "1px solid #e5e7eb",
+                borderRadius: 6,
+                zIndex: 1000,
+                maxHeight: 240,
+                overflowY: "auto",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+              }}
+            >
+              {suggestions.map((s) => (
+                <div
+                  key={`${s.place_id}`}
+                  onClick={() => pickSuggestion(s)}
+                  style={{
+                    padding: "8px 12px",
+                    cursor: "pointer",
+                    borderBottom: "1px solid #f3f4f6",
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  {s.display_name}
+                </div>
+              ))}
+            </div>
+          )}
+          </div>
           <button className="small-button" onClick={handleSearch}>
             Search
           </button>
@@ -680,39 +704,7 @@ export default function Dashboard() {
             {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : ""}
           </div>
         </div>
-
-        {showSuggestions && suggestions.length > 0 && (
-          <div
-            style={{
-              position: "fixed",
-              left: sugPos.left,
-              top: sugPos.top,
-              width: sugPos.width,
-              background: "#fff",
-              border: "1px solid #e5e7eb",
-              borderRadius: 6,
-              zIndex: 1000,
-              maxHeight: 240,
-              overflowY: "auto",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
-            }}
-          >
-            {suggestions.map((s) => (
-              <div
-                key={`${s.place_id}`}
-                onClick={() => pickSuggestion(s)}
-                style={{
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                  borderBottom: "1px solid #f3f4f6",
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-              >
-                {s.display_name}
-              </div>
-            ))}
-          </div>
-        )}
+        
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
         </div>
