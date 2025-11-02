@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sugPos, setSugPos] = useState({ left: 0, top: 0, width: 0 });
   const [lastUpdated, setLastUpdated] = useState(null);
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -387,7 +388,6 @@ export default function Dashboard() {
     }
     const id = setTimeout(async () => {
       try {
-        // Fetch both geo suggestions and lot suggestions, then merge
         const [geoData, lotData] = await Promise.all([
           (async () => {
             const url = buildSearchUrl(q, 5);
@@ -400,7 +400,6 @@ export default function Dashboard() {
           })(),
           fetchLotSuggestions(q, 5),
         ]);
-        // Merge and de-duplicate
         const merged = [];
         const seen = new Set();
         [...lotData, ...geoData].forEach((s) => {
@@ -410,7 +409,19 @@ export default function Dashboard() {
           merged.push(s);
         });
         setSuggestions(merged);
-        setShowSuggestions(merged.length > 0);
+        const has = merged.length > 0;
+        setShowSuggestions(has);
+        if (has) {
+          const el = searchInputRef.current;
+          if (el) {
+            const r = el.getBoundingClientRect();
+            setSugPos({
+              left: Math.round(r.left + window.scrollX),
+              top: Math.round(r.bottom + window.scrollY + 6),
+              width: Math.round(r.width),
+            });
+          }
+        }
       } catch (e) {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -419,6 +430,28 @@ export default function Dashboard() {
     }, 400);
     return () => clearTimeout(id);
   }, [query, buildSearchUrl, fetchLotSuggestions]);
+
+  // Keep dropdown aligned while it’s open (resize/scroll)
+  useEffect(() => {
+    if (!showSuggestions) return;
+    function updatePos() {
+      const el = searchInputRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setSugPos({
+        left: Math.round(r.left + window.scrollX),
+        top: Math.round(r.bottom + window.scrollY + 6),
+        width: Math.round(r.width),
+      });
+    }
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [showSuggestions]);
 
   // When a suggestion is clicked
   const pickSuggestion = useCallback(
@@ -429,10 +462,7 @@ export default function Dashboard() {
           latitude: parseFloat(sug.lat),
           longitude: parseFloat(sug.lon),
         };
-        setQuery(
-          (isLot ? sug.display_name : sug.display_name) ||
-            `${sug.lat}, ${sug.lon}`
-        );
+        setQuery(sug.display_name || `${sug.lat}, ${sug.lon}`);
         setError("");
         setNotice(`Centered to: ${sug.display_name || "Selected"}`);
         const map = mapInstanceRef.current;
@@ -651,6 +681,15 @@ export default function Dashboard() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             onFocus={() => {
               if (suggestions.length > 0) setShowSuggestions(true);
+              const el = searchInputRef.current;
+              if (el) {
+                const r = el.getBoundingClientRect();
+                setSugPos({
+                  left: Math.round(r.left + window.scrollX),
+                  top: Math.round(r.bottom + window.scrollY + 6),
+                  width: Math.round(r.width),
+                });
+              }
             }}
             onBlur={() => {
               // small delay so click can register before list hides
@@ -662,10 +701,10 @@ export default function Dashboard() {
           {showSuggestions && suggestions.length > 0 && (
             <div
               style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: "calc(100% + 6px)",
+                position: "fixed",
+                left: sugPos.left,
+                top: sugPos.top,
+                width: sugPos.width,
                 background: "#fff",
                 border: "1px solid #e5e7eb",
                 borderRadius: 6,
