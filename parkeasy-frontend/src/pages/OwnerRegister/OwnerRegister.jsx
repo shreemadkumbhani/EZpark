@@ -1,5 +1,6 @@
 // Page for parking owners to register their parking lot
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { API_BASE } from "../../config";
 import L from "leaflet";
@@ -13,6 +14,7 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 L.Icon.Default.mergeOptions({ iconUrl, iconRetinaUrl, shadowUrl });
 
 export default function OwnerRegister() {
+  const { role } = useAuth();
   // State variables for form fields and UI
   const [name, setName] = useState(""); // Parking lot name
   const [position, setPosition] = useState(null); // { lat, lng }
@@ -26,14 +28,6 @@ export default function OwnerRegister() {
   const [pincode, setPincode] = useState("");
   const [loading, setLoading] = useState(false); // Loading state
   const [msg, setMsg] = useState(""); // Status message
-  // Get user role from localStorage (default to 'user')
-  const [role, setRole] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("user") || "null")?.role || "user";
-    } catch {
-      return "user";
-    }
-  });
   const token = localStorage.getItem("token"); // Auth token
 
   // On mount, try to auto-detect current location for map center
@@ -104,7 +98,6 @@ export default function OwnerRegister() {
         user.role = "owner";
         localStorage.setItem("user", JSON.stringify(user));
       }
-      setRole("owner");
       setMsg("You're now an owner. You can add parking below.");
     } catch (err) {
       setMsg(err.response?.data?.message || "Failed to update role");
@@ -348,7 +341,7 @@ export default function OwnerRegister() {
   return (
     <div className="owner-wrap">
       <h2 className="owner-title">Register Your Parking</h2>
-      {role !== "owner" && (
+      {role !== "owner" && role !== "admin" && (
         <div
           style={{
             maxWidth: 520,

@@ -76,17 +76,14 @@ router.get("/search", async (req, res) => {
 
     const query = tokenClauses.length ? { $and: tokenClauses } : {};
 
-    const lots = await ParkingLot.find(
-      query,
-      {
-        name: 1,
-        location: 1,
-        address: 1,
-        totalSlots: 1,
-        availableSlots: 1,
-        carsParked: 1,
-      }
-    )
+    const lots = await ParkingLot.find(query, {
+      name: 1,
+      location: 1,
+      address: 1,
+      totalSlots: 1,
+      availableSlots: 1,
+      carsParked: 1,
+    })
       .limit(10)
       .lean();
     return res.json({ parkingLots: lots || [] });
@@ -171,6 +168,7 @@ router.post("/", requireAuth, async (req, res) => {
       address: address || {},
       totalSlots: Number(totalSlots),
       availableSlots: Number(totalSlots),
+      owner: req.user.id,
     });
     await lot.save();
     res.status(201).json({ message: "Parking lot registered", lot });
@@ -199,5 +197,22 @@ router.post("/become-owner", requireAuth, async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to update role", error: err.message });
+  }
+});
+
+// GET /api/parkinglots/owner - list lots owned by authenticated owner
+router.get("/owner", requireAuth, async (req, res) => {
+  try {
+    if (!req.user || !["owner", "admin"].includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Only owners can view their lots" });
+    }
+    const lots = await ParkingLot.find({ owner: req.user.id }).lean();
+    res.json({ parkingLots: lots });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching owner lots", error: err.message });
   }
 });

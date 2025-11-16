@@ -10,6 +10,7 @@ export default function Register() {
     email: "",
     phone: "",
     password: "",
+    role: "user",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -85,6 +86,31 @@ export default function Register() {
           onChange={handleChange}
           required
         />
+        <div className="role-selection">
+          <label className="role-label">Register as:</label>
+          <div className="role-options">
+            <label className="role-option">
+              <input
+                type="radio"
+                name="role"
+                value="user"
+                checked={form.role === "user"}
+                onChange={handleChange}
+              />
+              <span className="role-text">Customer</span>
+            </label>
+            <label className="role-option">
+              <input
+                type="radio"
+                name="role"
+                value="owner"
+                checked={form.role === "owner"}
+                onChange={handleChange}
+              />
+              <span className="role-text">Parking Owner</span>
+            </label>
+          </div>
+        </div>
         <input
           type="password"
           name="password"

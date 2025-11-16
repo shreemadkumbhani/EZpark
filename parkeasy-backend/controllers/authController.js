@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET; // Secret key for JWT
 exports.register = async (req, res) => {
   try {
     // Get user details from request body
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role } = req.body;
     // Basic validations
     if (!name || !email || !password) {
       return res
@@ -40,12 +40,17 @@ exports.register = async (req, res) => {
 
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
+    // Accept optional role (only allow 'user' or 'owner' at registration)
+    let regRole = "user";
+    if (role && ["user", "owner"].includes(role)) regRole = role;
+
     // Create new user in the database
     const newUser = await User.create({
       name,
       email,
       phone,
       password: hashedPassword,
+      role: regRole,
     });
 
     // Respond with success message and user info

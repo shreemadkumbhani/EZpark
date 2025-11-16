@@ -1,11 +1,14 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("token");
+// roles: optional array of allowed roles (e.g. ['owner','admin'])
+export default function ProtectedRoute({ children, roles }) {
+  const { isAuthed, role } = useAuth();
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthed) return <Navigate to="/login" replace />;
+  if (roles && roles.length > 0 && !roles.includes(role)) {
+    // If authenticated but wrong role, send to dashboard as a safe default
+    return <Navigate to="/dashboard" replace />;
   }
-
   return children;
 }

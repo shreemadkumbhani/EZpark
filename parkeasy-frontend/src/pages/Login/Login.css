@@ -12,7 +12,7 @@
 
 .login-eye-btn {
   position: absolute;
-  right: calc(6% + 2px); /* very close to the input's right border */
+  right: 10px; /* inside input padding area on all sizes */
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -27,19 +27,30 @@
 }
 .login-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #0f0f0f;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  align-items: center;
+  min-height: calc(100vh - 60px);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.05) 0%,
+    rgba(139, 92, 246, 0.05) 100%
+  );
+  padding: 20px;
 }
 
 .login-form {
-  background-color: #181818;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.8),
+    rgba(15, 23, 42, 0.9)
+  );
+  backdrop-filter: blur(16px);
   padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-  width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.1);
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .login-title {
@@ -66,7 +77,7 @@
 }
 
 .login-input {
-  width: 94%;
+  width: 100%;
   padding: 12px;
   background-color: #2a2a2a;
   border: 1px solid #333;
@@ -83,19 +94,21 @@
 
 .login-button {
   width: 100%;
-  background-color: #e50914;
-  color: white;
   padding: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
 .login-button:hover {
-  background-color: #b00610;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
 }
 
 .login-forgot {

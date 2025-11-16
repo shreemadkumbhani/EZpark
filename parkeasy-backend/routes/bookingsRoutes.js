@@ -7,6 +7,7 @@ const {
   addBooking,
   generateDemoBookings,
   getBookingsForUser,
+  getBookingsForLots,
   updateBookingStatus,
   cancelBooking,
   restockLotForCancelled,
@@ -115,3 +116,38 @@ router.patch("/:id/review", requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/bookings/owner-lots
+// Returns all bookings for parking lots owned by the authenticated owner/admin
+router.get("/owner-lots", requireAuth, async (req, res) => {
+  try {
+    if (!req.user || !["owner", "admin"].includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Only owners can view lot bookings" });
+    }
+    // Find all lots owned by this user
+    const lots = await ParkingLot.find(
+      { owner: req.user.id },
+      { _id: 1, name: 1 }
+    ).lean();
+    const lotIds = lots.map((l) => l._id.toString());
+    if (lotIds.length === 0) {
+      return res.json({ bookings: [], lots: [] });
+    }
+    let lotBookings = getBookingsForLots(lotIds);
+    // Update status dynamically
+    lotBookings = updateBookingStatus(lotBookings);
+    // Attach lot name for convenience (already stored but ensure freshness)
+    const nameMap = new Map(lots.map((l) => [l._id.toString(), l.name]));
+    lotBookings = lotBookings.map((b) => ({
+      ...b,
+      lotName: nameMap.get(String(b.lotId)) || b.lotName,
+    }));
+    res.json({ bookings: lotBookings, lots });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching owner bookings", error: err.message });
+  }
+});

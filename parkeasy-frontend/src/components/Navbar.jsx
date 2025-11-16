@@ -1,58 +1,60 @@
 // Navigation bar component for ParkEasy app
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 export default function Navbar() {
-  // Reactive auth state (updates instantly on logout/login, also across tabs)
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    () => !!localStorage.getItem("token")
-  );
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("user") || "null");
-    } catch {
-      return null;
-    }
-  });
+  const { isAuthed, user, logout, role } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    function onStorage(e) {
-      if (e.key === "token" || e.key === "user" || e.key === "auth:tick") {
-        setIsLoggedIn(!!localStorage.getItem("token"));
-        try {
-          setUser(JSON.parse(localStorage.getItem("user") || "null"));
-        } catch {
-          setUser(null);
-        }
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
   const navigate = useNavigate();
+
+  // Lock body scroll robustly when mobile menu is open (prevents underlay scroll/interactions)
+  useEffect(() => {
+    if (!menuOpen) return;
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overscroll: document.documentElement.style.overscrollBehavior,
+    };
+    // Prevent background scroll and iOS rubber-band
+    document.documentElement.style.overscrollBehavior = "none";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    return () => {
+      // Restore styles and scroll position
+      document.body.style.overflow = prev.overflow;
+      document.body.style.position = prev.position;
+      document.body.style.top = prev.top;
+      document.body.style.width = prev.width;
+      document.documentElement.style.overscrollBehavior = prev.overscroll;
+      window.scrollTo(0, scrollY);
+    };
+  }, [menuOpen]);
 
   // Handle user logout
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    // Bump a version to notify other tabs/listeners
-    try {
-      localStorage.setItem("auth:tick", String(Date.now()));
-    } catch (e) {
-      void e;
-    }
-    // Update local state immediately so UI reacts in this tab
-    setIsLoggedIn(false);
-    setUser(null);
+    logout();
     setMenuOpen(false);
     navigate("/");
   };
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">🚗 ParkEasy</div>
+      <div className="navbar-brand">
+        🚗 ParkEasy{" "}
+        {isAuthed && (
+          <span className="role-badge" title={`Role: ${role}`}>
+            {role}
+          </span>
+        )}
+      </div>
       <button
         className="menu-toggle"
         aria-label="Open menu"
@@ -82,7 +84,7 @@ export default function Navbar() {
           <Link to="/about">About</Link>
         </li>
         {/* Show Login/Register if not logged in */}
-        {!isLoggedIn && (
+        {!isAuthed && (
           <>
             <li>
               <Link to="/login">Login</Link>
@@ -93,17 +95,25 @@ export default function Navbar() {
           </>
         )}
         {/* Show dashboard, history, owner links, and logout if logged in */}
-        {isLoggedIn && (
+        {isAuthed && (
           <>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/booking-history">History</Link>
-            </li>
+            {role === "owner" || role === "admin" ? (
+              <li>
+                <Link to="/owner/dashboard">Owner Dashboard</Link>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link to="/dashboard">Dashboard</Link>
+                </li>
+                <li>
+                  <Link to="/booking-history">History</Link>
+                </li>
+              </>
+            )}
             <li>
               {/* Show Add Parking if owner, else Become Owner */}
-              {user?.role === "owner" ? (
+              {role === "owner" || role === "admin" ? (
                 <Link to="/owner/register">Add Parking</Link>
               ) : (
                 <Link to="/owner/register">Become Owner</Link>
@@ -118,47 +128,102 @@ export default function Navbar() {
         )}
       </ul>
       {menuOpen && (
-        <div className="mobile-menu" onClick={() => setMenuOpen(false)}>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            {!isLoggedIn && (
-              <>
-                <li>
-                  <Link to="/login">Login</Link>
-                </li>
-                <li>
-                  <Link to="/register">Register</Link>
-                </li>
-              </>
-            )}
-            {isLoggedIn && (
-              <>
-                <li>
-                  <Link to="/dashboard">Dashboard</Link>
-                </li>
-                <li>
-                  <Link to="/booking-history">History</Link>
-                </li>
-                <li>
-                  {user?.role === "owner" ? (
-                    <Link to="/owner/register">Add Parking</Link>
+        <div className="mobile-overlay" onClick={() => setMenuOpen(false)}>
+          <div
+            className="mobile-menu"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button
+              className="menu-close"
+              aria-label="Close menu"
+              onClick={() => setMenuOpen(false)}
+            >
+              ✕
+            </button>
+            <ul>
+              <li>
+                <Link to="/" onClick={() => setMenuOpen(false)}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" onClick={() => setMenuOpen(false)}>
+                  About
+                </Link>
+              </li>
+              {!isAuthed && (
+                <>
+                  <li>
+                    <Link to="/login" onClick={() => setMenuOpen(false)}>
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/register" onClick={() => setMenuOpen(false)}>
+                      Register
+                    </Link>
+                  </li>
+                </>
+              )}
+              {isAuthed && (
+                <>
+                  {role === "owner" || role === "admin" ? (
+                    <li>
+                      <Link
+                        to="/owner/dashboard"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Owner Dashboard
+                      </Link>
+                    </li>
                   ) : (
-                    <Link to="/owner/register">Become Owner</Link>
+                    <>
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Dashboard
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/booking-history"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          History
+                        </Link>
+                      </li>
+                    </>
                   )}
-                </li>
-                <li>
-                  <button onClick={handleLogout} className="logout-btn">
-                    Logout
-                  </button>
-                </li>
-              </>
-            )}
-          </ul>
+                  <li>
+                    {role === "owner" || role === "admin" ? (
+                      <Link
+                        to="/owner/register"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Add Parking
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/owner/register"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Become Owner
+                      </Link>
+                    )}
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="logout-btn">
+                      Logout
+                    </button>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
         </div>
       )}
     </nav>

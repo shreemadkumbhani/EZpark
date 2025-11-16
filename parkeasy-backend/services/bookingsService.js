@@ -66,6 +66,13 @@ function getBookingsForUser(userId) {
   return bookingsStore.filter((b) => b.userId === userId);
 }
 
+// Get bookings for a set of parking lot ids (owner view)
+function getBookingsForLots(lotIds = []) {
+  if (!Array.isArray(lotIds) || lotIds.length === 0) return [];
+  const idSet = new Set(lotIds.map(String));
+  return bookingsStore.filter((b) => idSet.has(String(b.lotId)));
+}
+
 function updateBookingStatus(bookingList) {
   const now = Date.now();
   return bookingList.map((b) => {
@@ -115,6 +122,7 @@ module.exports = {
   addBooking,
   generateDemoBookings,
   getBookingsForUser,
+  getBookingsForLots,
   updateBookingStatus,
   cancelBooking,
   restockLotForCancelled,
