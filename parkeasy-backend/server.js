@@ -66,16 +66,27 @@ mongoose
       console.log(`🚀 Server is running on http://localhost:${PORT}`)
     );
 
-    // Kick off a cron job to auto-complete expired bookings every minute
+    // Kick off a cron job to auto-expire bookings every minute
     try {
       cron.schedule("* * * * *", async () => {
         try {
-          const { updated } = await finalizeExpiredBookings();
-          if (updated) {
-            // Optional: console log minimal info to avoid noise
-            // console.log(`⏱️ Finalized ${updated} expired bookings`);
+          const { updated, errors } = await finalizeExpiredBookings();
+          if (updated > 0) {
+            console.log(
+              `⏱️ Auto-expired ${updated} bookings and freed up parking slots`
+            );
           }
-        } catch {}
+          if (errors > 0) {
+            console.warn(
+              `⚠️ ${errors} errors occurred while processing expired bookings`
+            );
+          }
+        } catch (error) {
+          console.error(
+            "❌ Error in scheduled booking expiration:",
+            error.message
+          );
+        }
       });
       // Also run once on startup
       finalizeExpiredBookings().catch(() => {});

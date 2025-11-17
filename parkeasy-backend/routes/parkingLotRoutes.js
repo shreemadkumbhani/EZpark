@@ -169,11 +169,9 @@ router.post("/", requireAuth, async (req, res) => {
     const { name, latitude, longitude, totalSlots, address, pricePerHour } =
       req.body;
     if (!name || latitude == null || longitude == null || !totalSlots) {
-      return res
-        .status(400)
-        .json({
-          message: "name, latitude, longitude, totalSlots are required",
-        });
+      return res.status(400).json({
+        message: "name, latitude, longitude, totalSlots are required",
+      });
     }
     const lot = new ParkingLot({
       name,

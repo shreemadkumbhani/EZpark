@@ -59,7 +59,7 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "completed", "cancelled"],
+      enum: ["active", "completed", "cancelled", "expired"],
       default: "active",
     },
   },
@@ -72,5 +72,6 @@ const bookingSchema = new mongoose.Schema(
 bookingSchema.index({ userId: 1, createdAt: -1 });
 bookingSchema.index({ parkingLotId: 1, status: 1 });
 bookingSchema.index({ status: 1 });
+bookingSchema.index({ status: 1, endTime: 1 }); // Optimizes expired booking queries
 
 module.exports = mongoose.model("Booking", bookingSchema);

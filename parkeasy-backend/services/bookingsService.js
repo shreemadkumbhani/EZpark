@@ -206,33 +206,55 @@ async function getOwnerStats(lotIds) {
 }
 
 /**
- * Finalize bookings that are past their endTime by marking them completed
- * and replenishing parking lot availability.
+ * Automatically marks active bookings as expired when their endTime has passed
+ * and frees up parking lot slots by replenishing availability.
  */
 async function finalizeExpiredBookings() {
   const now = new Date();
+  console.log(`🔍 Checking for expired bookings at ${now.toISOString()}`);
+
   // Find active bookings that ended in the past
-  const expired = await Booking.find({
+  const expiredBookings = await Booking.find({
     status: "active",
     endTime: { $lte: now },
-  });
-  if (!expired.length) return { updated: 0 };
+  }).populate("parkingLotId", "name");
+
+  if (!expiredBookings.length) {
+    console.log("📊 No expired bookings found");
+    return { updated: 0 };
+  }
+
+  console.log(`⏰ Found ${expiredBookings.length} expired bookings to process`);
   let updated = 0;
-  for (const b of expired) {
+  let errors = 0;
+
+  for (const booking of expiredBookings) {
     try {
-      // Mark completed
-      b.status = "completed";
-      await b.save();
-      // Replenish lot availability and decrement carsParked
-      await ParkingLot.findByIdAndUpdate(b.parkingLotId, {
+      // Mark as expired
+      booking.status = "expired";
+      await booking.save();
+
+      // Free up the parking slot by incrementing available slots and decrementing cars parked
+      await ParkingLot.findByIdAndUpdate(booking.parkingLotId, {
         $inc: { availableSlots: 1, carsParked: -1 },
       });
+
+      console.log(
+        `✅ Expired booking ${booking._id} for ${booking.parkingLotName} - slot freed`
+      );
       updated += 1;
-    } catch (e) {
-      // continue processing other bookings
+    } catch (error) {
+      console.error(
+        `❌ Error processing expired booking ${booking._id}:`,
+        error.message
+      );
+      errors += 1;
+      // Continue processing other bookings
     }
   }
-  return { updated };
+
+  console.log(`🎉 Processed ${updated} expired bookings, ${errors} errors`);
+  return { updated, errors };
 }
 
 // Legacy function for compatibility (no longer needed but kept for safety)

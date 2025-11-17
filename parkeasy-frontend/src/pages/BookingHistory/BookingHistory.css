@@ -285,3 +285,38 @@
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
+
+/* Status Badge Styles */
+.summary-status {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-active {
+  background: linear-gradient(135deg, var(--success), #15803d);
+  color: white;
+}
+
+.status-completed {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.status-expired {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.status-cancelled {
+  background: linear-gradient(135deg, var(--error), #dc2626);
+  color: white;
+}
+
+.status-upcoming {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}

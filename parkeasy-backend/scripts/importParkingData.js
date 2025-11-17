@@ -128,7 +128,7 @@ async function importParkingData() {
 
         // Check if parking lot with this name already exists (simplified check)
         const existingLot = await ParkingLot.findOne({
-          name: parkingLotData.name
+          name: parkingLotData.name,
         });
 
         if (existingLot) {
