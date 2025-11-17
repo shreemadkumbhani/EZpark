@@ -1,11 +1,17 @@
+require("dotenv").config({ path: __dirname + '/.env' });
 const app = require("./app");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
 const { finalizeExpiredBookings } = require("./services/bookingsService");
-require("dotenv").config();
 
 const PORT = process.env.PORT || 8080; // respect .env or fallback to 8080
 const MONGO_URI = process.env.MONGO_URI;
+
+// Debug logging
+console.log("🔍 Environment Check:");
+console.log("  PORT:", PORT);
+console.log("  MONGO_URI:", MONGO_URI ? "✓ SET" : "✗ NOT SET");
+console.log("  JWT_SECRET:", process.env.JWT_SECRET ? "✓ SET" : "✗ NOT SET");
 
 // Trust proxy (needed on Render/hosted envs for accurate protocol/origin)
 app.set("trust proxy", 1);
