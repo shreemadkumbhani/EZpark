@@ -76,19 +76,13 @@ export default function Navbar() {
         </svg>
       </button>
       <ul className="navbar-links desktop">
-        {/* Always show Home link */}
+        {/* Keep same clean layout as home page */}
         <li>
           <Link to="/">Home</Link>
         </li>
         <li>
           <Link to="/about">About</Link>
         </li>
-        {/* Only show payment for regular users, not owners */}
-        {isAuthed && role !== "owner" && role !== "admin" && (
-          <li>
-            <Link to="/payment">Payment</Link>
-          </li>
-        )}
         {/* Show Login/Register if not logged in */}
         {!isAuthed && (
           <>
@@ -100,26 +94,16 @@ export default function Navbar() {
             </li>
           </>
         )}
-        {/* Show dashboard, history, owner links, and logout if logged in */}
+        {/* When logged in, show only primary action and logout */}
         {isAuthed && (
           <>
             {role === "owner" || role === "admin" ? (
               <li>
-                <Link to="/owner/dashboard">Owner Dashboard</Link>
+                <Link to="/owner/dashboard">Dashboard</Link>
               </li>
             ) : (
-              <>
-                <li>
-                  <Link to="/dashboard">Dashboard</Link>
-                </li>
-                <li>
-                  <Link to="/booking-history">History</Link>
-                </li>
-              </>
-            )}
-            {(role === "owner" || role === "admin") && (
               <li>
-                <Link to="/owner/register">Add Parking</Link>
+                <Link to="/dashboard">Dashboard</Link>
               </li>
             )}
             <li>
