@@ -115,6 +115,7 @@ export default function Dashboard() {
 
   // Helpers (used by effects/UI below)
   function getOccupancyRatio(lot) {
+    // Ensure `lot` and `availableSlots` are defined before accessing
     if (!lot || typeof lot.availableSlots === "undefined") {
       return 0; // Default value if lot or availableSlots is undefined
     }
@@ -959,8 +960,8 @@ export default function Dashboard() {
                 </div>
                 <div className="meta">
                   Distance: {formatDistance(selectedLot.distance || 0)} • Slots
-                  left: {selectedLot.availableSlots} • Cars parked:{" "}
-                  {selectedLot.carsParked || 0}
+                  left: {selectedLot?.availableSlots ?? 0} • Cars parked: {" "}
+                  {selectedLot?.carsParked || 0}
                 </div>
                 <div className="booking-controls" style={{ marginTop: 8 }}>
                   <label htmlFor="booking-hour">Select hour:</label>
@@ -979,7 +980,7 @@ export default function Dashboard() {
                     disabled={
                       bookingLoading ||
                       !bookingHour ||
-                      selectedLot.availableSlots < 1
+                      (Number(selectedLot?.availableSlots || 0) < 1)
                     }
                   >
                     {bookingLoading ? "Booking..." : "Book Slot"}
