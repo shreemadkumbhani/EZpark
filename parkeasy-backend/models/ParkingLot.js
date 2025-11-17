@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const ParkingLotSchema = new mongoose.Schema({
   name: String, // Name of the parking lot
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Owner user id
+  pricePerHour: { type: Number, required: true, default: 50 }, // Pricing for bookings
   location: {
     type: {
       type: String, // Should always be 'Point' for GeoJSON

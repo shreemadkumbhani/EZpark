@@ -98,44 +98,46 @@ module.exports = router;
 
 // POST /api/parkinglots/:id/book
 // Book a slot at a parking lot (decrements availableSlots, increments carsParked) and record booking
-router.post("/:id/book", requireAuth, async (req, res) => {
+router.post(":id/book", requireAuth, async (req, res) => {
   const { id } = req.params;
-  const { hour } = req.body;
-  if (!hour) return res.status(400).json({ message: "Hour required" });
+  const { hour, vehicleType = "car", vehicleNumber = "UNKNOWN" } = req.body;
+  const duration = parseFloat(hour || req.body.duration) || 1;
+  if (duration <= 0) return res.status(400).json({ message: "Invalid duration" });
   try {
     const lot = await ParkingLot.findById(id);
     if (!lot) return res.status(404).json({ message: "Parking lot not found" });
     if (lot.availableSlots < 1)
       return res.status(400).json({ message: "No slots available" });
-    // For demo: just increment carsParked, decrement availableSlots
-    lot.carsParked += 1;
-    lot.availableSlots -= 1;
-    await lot.save();
 
-    // Record booking in shared store so history shows it
-    const duration = parseInt(hour, 10) || 1;
-    const now = Date.now();
-    const startTime = now;
-    const endTime = now + duration * 3600000;
-    const slotNumber = lot.carsParked; // simplistic slot reference
+    // Fetch user details for booking metadata
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    bookingsService.addBooking({
-      userId: req.user.id,
-      lotId: lot._id?.toString?.() || String(lot._id),
-      lotName: lot.name,
-      slot: slotNumber,
-      time: now,
-      startTime,
+    const now = new Date();
+    const endTime = new Date(now.getTime() + duration * 3600000);
+    const pricePerHour = lot.pricePerHour || 50;
+    const totalPrice = pricePerHour * duration;
+
+    const bookingData = {
+      userId: user._id,
+      userName: user.name || "Unknown",
+      userEmail: user.email || "",
+      userPhone: user.phone || "",
+      parkingLotId: lot._id,
+      parkingLotName: lot.name,
+      vehicleType,
+      vehicleNumber,
+      startTime: now,
       endTime,
-      price: duration * 10,
-      vehicle: "",
-      latitude: lot.location?.coordinates?.[1],
-      longitude: lot.location?.coordinates?.[0],
-      status: "Upcoming",
-      review: "",
-    });
+      duration,
+      pricePerHour,
+      totalPrice,
+      status: "active",
+    };
 
-    res.json({ message: "Slot booked!", lot });
+    const booking = await bookingsService.createBooking(bookingData);
+
+    res.json({ message: "Slot booked!", booking });
   } catch (err) {
     res.status(500).json({ message: "Booking failed", error: err.message });
   }
@@ -145,20 +147,13 @@ router.post("/:id/book", requireAuth, async (req, res) => {
 // Owner registers a new parking lot (requires owner/admin role)
 router.post("/", requireAuth, async (req, res) => {
   try {
-    // Only allow owners or admins to register new parking
     if (!req.user || !["owner", "admin"].includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Only owners can register parking" });
+      return res.status(403).json({ message: "Only owners can register parking" });
     }
-    const { name, latitude, longitude, totalSlots, address } = req.body;
-    // Validate required fields
+    const { name, latitude, longitude, totalSlots, address, pricePerHour } = req.body;
     if (!name || latitude == null || longitude == null || !totalSlots) {
-      return res.status(400).json({
-        message: "name, latitude, longitude, totalSlots are required",
-      });
+      return res.status(400).json({ message: "name, latitude, longitude, totalSlots are required" });
     }
-    // Create and save new parking lot
     const lot = new ParkingLot({
       name,
       location: {
@@ -169,13 +164,12 @@ router.post("/", requireAuth, async (req, res) => {
       totalSlots: Number(totalSlots),
       availableSlots: Number(totalSlots),
       owner: req.user.id,
+      pricePerHour: pricePerHour != null ? Number(pricePerHour) : undefined,
     });
     await lot.save();
     res.status(201).json({ message: "Parking lot registered", lot });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Failed to register parking lot", error: err.message });
+    res.status(500).json({ message: "Failed to register parking lot", error: err.message });
   }
 });
 
