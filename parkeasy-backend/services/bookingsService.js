@@ -185,11 +185,45 @@ async function updateBookingStatus(bookingId, status, userId = null) {
     if (userId) {
       query.userId = userId;
     }
-    const booking = await Booking.findOneAndUpdate(
-      query,
-      { status },
-      { new: true }
-    ).populate("parkingLotId", "name address");
+    const booking = await Booking.findOne(query).populate(
+      "parkingLotId",
+      "name address totalSlots availableSlots carsParked"
+    );
+    if (!booking) return null;
+
+    const prevStatus = booking.status;
+    const nextStatus = status;
+    if (!["active", "completed", "cancelled", "expired"].includes(nextStatus)) {
+      throw new Error("Invalid status value");
+    }
+
+    // Determine if lot counters need adjustment
+    let lotUpdate = null;
+    const lotId = booking.parkingLotId?._id || booking.parkingLotId;
+    if (lotId) {
+      // Transition releasing a slot (active -> terminal state)
+      const releases =
+        prevStatus === "active" && ["completed", "cancelled", "expired"].includes(nextStatus);
+      // Transition occupying a slot (reactivating)
+      const occupies =
+        nextStatus === "active" && ["completed", "cancelled", "expired"].includes(prevStatus);
+
+      if (releases) {
+        lotUpdate = { $inc: { availableSlots: 1, carsParked: -1 } };
+      } else if (occupies) {
+        lotUpdate = { $inc: { availableSlots: -1, carsParked: 1 } };
+      }
+    }
+
+    booking.status = nextStatus;
+    await booking.save();
+    if (lotUpdate && lotId) {
+      try {
+        await ParkingLot.findByIdAndUpdate(lotId, lotUpdate);
+      } catch (e) {
+        console.error("Lot counter update failed during status change", e.message);
+      }
+    }
     return booking;
   } catch (error) {
     throw new Error(`Failed to update booking: ${error.message}`);

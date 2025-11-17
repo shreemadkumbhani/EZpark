@@ -28,6 +28,8 @@ export default function BookingHistory() {
     fetchBookings,
     cancelBooking,
     cancelling,
+    completeBooking,
+    completing,
   } = useBookingHistory({ perPage: 2 });
   const [review, setReview] = useState({});
   const [error, setError] = useState(null);
@@ -226,6 +228,16 @@ export default function BookingHistory() {
                     onClick={() => cancelBooking(bookingId)}
                   >
                     {cancelling[bookingId] ? "Cancelling..." : "Cancel Booking"}
+                  </button>
+                )}
+                {status === "Active" && (
+                  <button
+                    className="receipt-btn"
+                    style={{ background: "#2563eb" }}
+                    disabled={!!completing[bookingId]}
+                    onClick={() => completeBooking(bookingId)}
+                  >
+                    {completing[bookingId] ? "Completing..." : "Complete"}
                   </button>
                 )}
               </li>

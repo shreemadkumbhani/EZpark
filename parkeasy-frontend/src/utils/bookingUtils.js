@@ -18,7 +18,9 @@ export function computeStatus(booking) {
     }
   }
   const now = Date.now();
-  const start = booking.startTime ? new Date(booking.startTime).getTime() : null;
+  const start = booking.startTime
+    ? new Date(booking.startTime).getTime()
+    : null;
   const end = booking.endTime ? new Date(booking.endTime).getTime() : null;
   if (end && now > end) return "Completed";
   if (start && now < start) return "Upcoming";
@@ -62,9 +64,11 @@ export function getVehicleNumber(booking) {
 
 export function getQRCodeUrl(booking) {
   const lotName = getLotDisplayName(booking);
-  const qrData = `Booking ID: ${booking._id || booking.id}\nLot: ${lotName}\nVehicle: ${
-    getVehicleNumber(booking)
-  }\nTime: ${formatDateTime(booking.createdAt || booking.time)}`;
+  const qrData = `Booking ID: ${
+    booking._id || booking.id
+  }\nLot: ${lotName}\nVehicle: ${getVehicleNumber(
+    booking
+  )}\nTime: ${formatDateTime(booking.createdAt || booking.time)}`;
   const encodedData = encodeURIComponent(qrData);
   return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodedData}&bgcolor=23232a&color=ffffff`;
 }

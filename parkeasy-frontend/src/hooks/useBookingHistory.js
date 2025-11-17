@@ -11,6 +11,7 @@ export function useBookingHistory(options = {}) {
   const [sort, setSort] = useState("desc");
   const [page, setPage] = useState(1);
   const [cancelling, setCancelling] = useState({});
+  const [completing, setCompleting] = useState({});
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
@@ -66,6 +67,27 @@ export function useBookingHistory(options = {}) {
     }
   }
 
+  async function completeBooking(bookingId) {
+    if (!bookingId) return;
+    if (!window.confirm("Mark this booking as completed and free the slot?"))
+      return;
+    try {
+      setCompleting((s) => ({ ...s, [bookingId]: true }));
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${API_BASE}/api/bookings/${bookingId}/status`,
+        { status: "completed" },
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
+      await fetchBookings();
+    } catch (e) {
+      console.error("Failed to complete booking", e);
+      alert(e.response?.data?.message || "Failed to complete booking");
+    } finally {
+      setCompleting((s) => ({ ...s, [bookingId]: false }));
+    }
+  }
+
   const filtered = bookings.filter((b) => {
     if (filter === "all") return true;
     const status = computeStatus(b).toLowerCase();
@@ -80,7 +102,10 @@ export function useBookingHistory(options = {}) {
 
   const totalPages = Math.ceil(sorted.length / perPage) || 1;
   const currentPage = Math.min(page, totalPages);
-  const paged = sorted.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const paged = sorted.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
 
   return {
     bookings,
@@ -96,6 +121,8 @@ export function useBookingHistory(options = {}) {
     perPage,
     fetchBookings,
     cancelBooking,
+    completeBooking,
     cancelling,
+    completing,
   };
 }
