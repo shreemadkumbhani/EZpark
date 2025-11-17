@@ -652,8 +652,9 @@ export default function Dashboard() {
   // Availability status without numbers
   // Get availability status and color class for a parking lot
   function getAvailabilityStatus(lot) {
-    const a = Number(lot.availableSlots || 0);
-    const t = Number(lot.totalSlots || 0) || 1;
+    if (!lot) return { label: "Unavailable", cls: "status-limited" };
+    const a = Number(lot?.availableSlots ?? 0);
+    const t = Number(lot?.totalSlots ?? 0) || 1;
     if (a <= 0) return { label: "Sold out", cls: "status-sold" };
     const ratio = Math.max(0, Math.min(1, a / t));
     // More granular bands (7 + sold out)
@@ -885,7 +886,7 @@ export default function Dashboard() {
         )}
 
         <div className="slot-grid">
-          {parkingLots.map((lot) => {
+          {parkingLots.filter(Boolean).map((lot) => {
             const isFlipped = false; // flipping disabled
             const status = getAvailabilityStatus(lot);
             return (
