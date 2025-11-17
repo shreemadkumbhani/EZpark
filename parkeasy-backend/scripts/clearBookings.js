@@ -1,24 +1,28 @@
-// Script to delete all bookings from the database
+// Script to delete all bookings and parking lots from the database
 require("dotenv").config();
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
+const ParkingLot = require("../models/ParkingLot");
 
 const MONGO_URI = process.env.MONGO_URI;
 
-async function clearAllBookings() {
+async function clearAllData() {
   try {
     await mongoose.connect(MONGO_URI);
     console.log("✅ Connected to MongoDB");
 
-    const result = await Booking.deleteMany({});
-    console.log(`🗑️  Deleted ${result.deletedCount} bookings`);
+    const bookingResult = await Booking.deleteMany({});
+    console.log(`🗑️  Deleted ${bookingResult.deletedCount} bookings`);
 
-    console.log("✅ All bookings cleared successfully");
+    const parkingResult = await ParkingLot.deleteMany({});
+    console.log(`🗑️  Deleted ${parkingResult.deletedCount} parking lots`);
+
+    console.log("✅ All data cleared successfully");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Error clearing bookings:", error);
+    console.error("❌ Error clearing data:", error);
     process.exit(1);
   }
 }
 
-clearAllBookings();
+clearAllData();
