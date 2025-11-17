@@ -106,6 +106,12 @@ export default function Navbar() {
                 <Link to="/dashboard">Dashboard</Link>
               </li>
             )}
+            {/* Booking History visible for regular authenticated users */}
+            {isAuthed && role !== "owner" && role !== "admin" && (
+              <li>
+                <Link to="/booking-history">History</Link>
+              </li>
+            )}
             <li>
               <button onClick={handleLogout} className="logout-btn">
                 Logout

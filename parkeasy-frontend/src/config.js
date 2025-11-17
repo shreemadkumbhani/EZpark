@@ -11,6 +11,10 @@ export const API_BASE = (() => {
     const host =
       (typeof window !== "undefined" && window.location.hostname) ||
       "localhost";
+    // If running on a Vercel domain and no env provided, fallback to expected Render backend URL
+    if (/vercel\.app$/.test(host)) {
+      return "https://parkeasy-backend.onrender.com"; // Fallback; override via VITE_API_BASE in Vercel settings
+    }
     return `http://${host}:8080`;
   } catch {
     return "http://localhost:8080";

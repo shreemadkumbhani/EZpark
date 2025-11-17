@@ -30,6 +30,19 @@ export default function BookingHistory() {
     cancelling,
   } = useBookingHistory({ perPage: 2 });
   const [review, setReview] = useState({});
+  const [error, setError] = useState(null);
+
+  // Wrap fetchBookings to capture and surface error state
+  async function safeRefresh() {
+    setError(null);
+    try {
+      await fetchBookings();
+      if (!Array.isArray(bookings)) throw new Error("Invalid response shape");
+    } catch (e) {
+      console.error("Booking history refresh failed", e);
+      setError(e.message || "Failed to load bookings");
+    }
+  }
 
   return (
     <div className="history-container">
@@ -56,10 +69,15 @@ export default function BookingHistory() {
             <option value="asc">Oldest First</option>
           </select>
         </label>
-        <button onClick={fetchBookings} className="receipt-btn">
+        <button onClick={safeRefresh} className="receipt-btn">
           Refresh
         </button>
       </div>
+      {error && (
+        <div style={{ color: "#f87171", fontSize: 14, marginBottom: 12 }}>
+          {error} – ensure backend URL is configured.
+        </div>
+      )}
       {bookings.length === 0 ? (
         <p className="no-history">No bookings found.</p>
       ) : (
@@ -217,9 +235,18 @@ export default function BookingHistory() {
       )}
       {totalPages > 1 && (
         <div className="pagination">
-          <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>
-          <span>Page {page} of {totalPages}</span>
-          <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>
+          <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+            Prev
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
         </div>
       )}
     </div>
