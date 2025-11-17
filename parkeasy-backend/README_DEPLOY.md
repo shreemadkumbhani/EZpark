@@ -14,8 +14,8 @@ Set these in Render service → Environment:
 - `MONGO_URI` – your MongoDB connection string
 - `JWT_SECRET` – random secret for JWTs
 - `FRONTEND_URL` – your Vercel app URL (e.g., `https://<app>.vercel.app`)
- - `RAZORPAY_KEY_ID` – Razorpay key id (publishable)
- - `RAZORPAY_KEY_SECRET` – Razorpay secret key
+- `RAZORPAY_KEY_ID` – Razorpay key id (publishable)
+- `RAZORPAY_KEY_SECRET` – Razorpay secret key
 
 Note: The server listens on `process.env.PORT` provided by Render.
 

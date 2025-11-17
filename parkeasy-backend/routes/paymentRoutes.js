@@ -131,4 +131,51 @@ router.post("/verify", auth, async (req, res) => {
   }
 });
 
+// Test endpoints without authentication
+router.post("/test-order", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Valid amount is required" });
+    }
+
+    const instance = getRazorpay();
+    const amountPaise = Math.max(1, Math.round(amount * 100));
+
+    const order = await instance.orders.create({
+      amount: amountPaise,
+      currency: "INR",
+      receipt: `test_${Date.now()}`,
+      notes: { test: true },
+    });
+
+    res.json({ order });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to create test order" });
+  }
+});
+
+router.post("/test-verify", async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ message: "Missing verification fields" });
+    }
+
+    const expectedSignature = crypto
+      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    const isValid = expectedSignature === razorpay_signature;
+    if (!isValid) {
+      return res.status(400).json({ verified: false, message: "Invalid signature" });
+    }
+
+    res.json({ verified: true, message: "Test payment verified successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to verify test payment" });
+  }
+});
+
 module.exports = router;
