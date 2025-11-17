@@ -12,7 +12,8 @@ const DEFAULT_COORDS = { latitude: 23.0512, longitude: 72.6677 };
 
 export default function Dashboard() {
   // State variables for parking lots, loading, errors, booking, and UI
-  const [parkingLots, setParkingLots] = useState([]); // List of nearby parking lots
+  const [parkingLots, setParkingLots] = useState([]); // List of nearby parking lots (5km radius)
+  const [allParkingLots, setAllParkingLots] = useState([]); // All parking lots for map display
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(""); // Error message
   const [selectedLot, setSelectedLot] = useState(null); // Currently selected lot for booking
@@ -143,6 +144,19 @@ export default function Dashboard() {
   }
 
   // Fetch nearby parking lots from backend using user's coordinates
+  // Fetch all parking lots for map display (no radius limit)
+  const fetchAllParkingLots = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE}/api/parkinglots/all`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      setAllParkingLots(res.data.parkingLots || []);
+    } catch (err) {
+      console.error("Could not fetch all parking lots for map:", err.message);
+    }
+  }, []);
+
   const fetchParkingLots = useCallback(async (coords) => {
     setLoading(true);
     setError("");
@@ -150,7 +164,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE}/api/parkinglots`, {
-        params: { lat: coords.latitude, lng: coords.longitude, radius: 2000 },
+        params: { lat: coords.latitude, lng: coords.longitude, radius: 5000 },
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setParkingLots(res.data.parkingLots || []);
@@ -218,10 +232,11 @@ export default function Dashboard() {
     );
   }, [fetchParkingLots]);
 
-  // On mount, ask for location and load lots
+  // On mount, ask for location and load lots, and fetch all lots for map
   useEffect(() => {
     askLocationAndLoad();
-  }, [askLocationAndLoad]);
+    fetchAllParkingLots();
+  }, [askLocationAndLoad, fetchAllParkingLots]);
 
   // Auto refresh at intervals (always on)
   useEffect(() => {
@@ -312,7 +327,7 @@ export default function Dashboard() {
     userMarkerRef.current = um;
   }, []);
 
-  // Update markers whenever parkingLots change
+  // Update markers whenever allParkingLots change (show all on map)
   useEffect(() => {
     const map = mapInstanceRef.current;
     const layer = markersLayerRef.current;
@@ -320,7 +335,7 @@ export default function Dashboard() {
     layer.clearLayers();
 
     const markers = [];
-    parkingLots.forEach((lot) => {
+    allParkingLots.forEach((lot) => {
       const lat = lot.location?.coordinates?.[1];
       const lng = lot.location?.coordinates?.[0];
       if (lat == null || lng == null) return;
@@ -354,7 +369,7 @@ export default function Dashboard() {
         if (manualCenterRef.current) manualCenterRef.current = false;
       }
     }
-  }, [parkingLots]);
+  }, [allParkingLots]);
 
   // Search by text using OpenStreetMap Nominatim
   async function handleSearch() {

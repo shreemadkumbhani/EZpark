@@ -1,0 +1,201 @@
+id,name,lat,lon,address,type,totalSlots,availableSlots,osm_source
+6601eb25-b576-4cd7-809f-d074aec2bf7a,Alpha One Mall Parking,23.0264288,72.5660875,"Alpha One Mall, Vastrapur, Ahmedabad",multi-storey,600.0,366,True
+cf25a29e-4205-48b8-b6e1-5adedb457ee1,Vastrapur Lake Parking,23.0229,72.5405,"Vastrapur Lake, Ahmedabad",surface,120.0,14,True
+a4057a1c-bafb-4631-af50-60bfea0ff529,Ahmedabad Railway Station Parking,23.0312,72.5974,"Kalupur, Ahmedabad Railway Station",surface,300.0,96,True
+4d32e285-aeae-4ad8-9ffe-e91089c2cd16,Science City Parking Lot,23.0503,72.6265,"Science City, Ahmedabad",surface,200.0,55,True
+16847546-5943-4ad2-9953-53a42a2a142d,Gujarat University Parking,23.0389,72.5567,"Gujarat University, Ahmedabad",surface,400.0,275,True
+1adba283-4a55-4a8f-b954-8f4a28b2c4bd,ISCKON Temple Parking,23.042,72.5736,Near ISKCON Ahmedabad,surface,150.0,96,True
+08ba3f5e-3e48-448f-be17-d619105cb158,CG Road Public Parking,23.0345,72.5694,"CG Road, Navrangpura",surface,80.0,65,True
+ed1acf87-7556-44d4-84c1-7439ab189ef1,Naroda Road Multi-Storey Car Park,23.0592,72.6118,"Naroda Road, Ahmedabad",multi-storey,350.0,59,True
+14bc2d76-21df-40c8-bc4a-4498dd5fc8a9,Shivranjani Circle Parking,23.0418,72.569,"Shivranjani Circle, Ahmedabad",surface,60.0,26,True
+7434097b-f8fc-42d4-9873-673ee101e208,Drive-in Cinema Surface Parking,23.0335,72.548,"Drive-in Cinema Road, Ahmedabad",surface,180.0,22,True
+af14fc7a-0cea-491c-9126-c2785a5e94c6,Satellite Public Parking 288,22.987168,72.560964,"102 Satellite Road, Ahmedabad, Gujarat",underground,400.0,181,False
+228a4437-3237-4fb6-a323-e85b8f20292b,Naranpura Public Parking 358,23.087603,72.47117,"217 Naranpura Road, Ahmedabad, Gujarat",underground,200.0,48,False
+41432646-e360-44e7-9086-9438dd8065ac,Jamalpur Public Parking 434,22.967376,72.538387,"177 Jamalpur Road, Ahmedabad, Gujarat",surface,150.0,106,False
+4decd283-8f0e-43f5-88f7-19b99a3a3091,Gandhinagar Road Public Parking 151,23.11543,72.538136,"186 Gandhinagar Road Road, Ahmedabad, Gujarat",multi-storey,120.0,10,False
+8730dd29-bf6c-487a-b6f3-a844f2bc1dc5,Thaltej Public Parking 444,23.081422,72.64734,"52 Thaltej Road, Ahmedabad, Gujarat",underground,250.0,155,False
+933feb72-3cb8-4f9f-9770-8b8b998af5e4,Vejalpur Public Parking 360,22.977651,72.533949,"37 Vejalpur Road, Ahmedabad, Gujarat",on-street,100.0,27,False
+cd8f1fb7-5021-4b22-b05e-5aa1ae662466,Gandhinagar Road Public Parking 113,23.014507,72.648114,"167 Gandhinagar Road Road, Ahmedabad, Gujarat",underground,50.0,3,False
+a1c4b920-317a-498e-ab6d-322e9193d4f4,Isanpur Public Parking 449,23.018198,72.481914,"162 Isanpur Road, Ahmedabad, Gujarat",on-street,120.0,48,False
+4b09db8e-b9eb-4973-a57c-9fa0c46c0514,Gandhinagar Road Public Parking 276,22.974288,72.495133,"135 Gandhinagar Road Road, Ahmedabad, Gujarat",multi-storey,250.0,102,False
+38320534-76df-4d3a-a90d-3952d7f30ad2,Amraiwadi Public Parking 47,23.119545,72.4949,"25 Amraiwadi Road, Ahmedabad, Gujarat",on-street,75.0,14,False
+bc70faef-d400-4552-baf3-e3066f58d5e2,Vastral Public Parking 240,23.05139,72.539258,"271 Vastral Road, Ahmedabad, Gujarat",surface,150.0,123,False
+3a26b4d1-8448-45ee-aff2-16aa167fd562,Gandhinagar Road Public Parking 385,23.065648,72.490619,"137 Gandhinagar Road Road, Ahmedabad, Gujarat",surface,,45,False
+69077741-88ee-42f4-bba0-dd4263680478,Vejalpur Public Parking 498,23.112149,72.627654,"257 Vejalpur Road, Ahmedabad, Gujarat",underground,100.0,14,False
+8d257a37-5314-4e03-be98-c8dd8c037a7f,Bodakdev Public Parking 79,23.093084,72.561379,"192 Bodakdev Road, Ahmedabad, Gujarat",surface,100.0,75,False
+509b12ed-89a8-4a92-90c4-21334618e3ac,Maninagar Public Parking 476,23.051821,72.557949,"186 Maninagar Road, Ahmedabad, Gujarat",surface,150.0,40,False
+e8b5b9b9-92df-4854-9ed7-95d7d31876f5,Nikol Public Parking 390,22.964561,72.557478,"273 Nikol Road, Ahmedabad, Gujarat",multi-storey,100.0,47,False
+f3e0a760-189e-48ca-99ed-08c54406847e,Navrangpura Public Parking 494,22.99506,72.627038,"109 Navrangpura Road, Ahmedabad, Gujarat",underground,400.0,268,False
+56c874bc-bf1c-4724-a7a5-9c26839867c0,Jamalpur Public Parking 225,23.017829,72.590904,"265 Jamalpur Road, Ahmedabad, Gujarat",underground,300.0,75,False
+ac20fc99-80d6-43b8-aba0-4c76d949524b,Isanpur Public Parking 113,22.953576,72.569706,"4 Isanpur Road, Ahmedabad, Gujarat",surface,75.0,7,False
+37a784c5-5e28-48e8-a261-7cc6b873b8df,Nikol Public Parking 264,23.103921,72.624734,"122 Nikol Road, Ahmedabad, Gujarat",multi-storey,150.0,36,False
+0c11013a-96f1-414e-9b3d-cdcf0c3cdbf4,Isanpur Public Parking 243,23.07297,72.628829,"125 Isanpur Road, Ahmedabad, Gujarat",surface,300.0,66,False
+1ff512ac-840b-4d2d-a8bc-6b2e6f45855e,Navrangpura Public Parking 240,23.062027,72.533774,"28 Navrangpura Road, Ahmedabad, Gujarat",surface,,111,False
+26258536-3786-405d-9989-d8f9f80625db,Sabarmati Public Parking 72,22.992272,72.504238,"217 Sabarmati Road, Ahmedabad, Gujarat",surface,100.0,27,False
+64deaf4e-e165-421b-bced-fd51b33054c6,Gandhinagar Road Public Parking 51,23.025332,72.625043,"26 Gandhinagar Road Road, Ahmedabad, Gujarat",multi-storey,400.0,368,False
+341efe63-a67e-48ea-a1b1-8180fa3d7d79,Bodakdev Public Parking 443,22.978273,72.557415,"206 Bodakdev Road, Ahmedabad, Gujarat",on-street,50.0,2,False
+8dd5b3a0-285f-46d9-876f-1a4c689e28bd,Sabarmati Public Parking 147,22.995085,72.611133,"217 Sabarmati Road, Ahmedabad, Gujarat",multi-storey,400.0,195,False
+0dd95391-5782-4588-a103-64623a4553cb,Isanpur Public Parking 377,23.00044,72.644368,"278 Isanpur Road, Ahmedabad, Gujarat",on-street,50.0,5,False
+d2a95a66-5a29-4059-b3b3-52c0470b8cff,Naranpura Public Parking 30,23.035485,72.62349,"261 Naranpura Road, Ahmedabad, Gujarat",surface,75.0,8,False
+1fbf53e7-9681-40f6-a51e-3162d2ac21db,Maninagar Public Parking 483,23.064786,72.512337,"292 Maninagar Road, Ahmedabad, Gujarat",surface,120.0,10,False
+76b8c881-0f24-4862-b019-fad9d103468d,GIDC Public Parking 162,23.021268,72.575061,"134 GIDC Road, Ahmedabad, Gujarat",underground,120.0,39,False
+7493c02e-3ca7-41d8-804a-6092f756fe42,Memnagar Public Parking 235,23.017284,72.590904,"162 Memnagar Road, Ahmedabad, Gujarat",multi-storey,,7,False
+5bf421b2-001d-42ee-be5f-7dec6366b482,Jamalpur Public Parking 452,23.036,72.493842,"36 Jamalpur Road, Ahmedabad, Gujarat",underground,120.0,23,False
+3111fe38-a0c7-4d8f-8222-fa9547c658f5,GIDC Public Parking 5,23.053985,72.647702,"284 GIDC Road, Ahmedabad, Gujarat",multi-storey,150.0,21,False
+dbe4264f-9a7d-4c0d-bac3-c54a4b488935,Gandhinagar Road Public Parking 80,22.994959,72.630148,"140 Gandhinagar Road Road, Ahmedabad, Gujarat",multi-storey,150.0,104,False
+576d5fa4-20ff-4184-9f88-5766de900333,GIDC Public Parking 251,23.066875,72.623524,"129 GIDC Road, Ahmedabad, Gujarat",surface,,152,False
+cc6e455c-6256-472c-96f5-3f8c67bda5cc,Vejalpur Public Parking 83,22.950603,72.608801,"227 Vejalpur Road, Ahmedabad, Gujarat",surface,400.0,221,False
+13d7a480-32e7-47bf-878f-fef28c4857de,Paldi Public Parking 280,22.962791,72.628959,"19 Paldi Road, Ahmedabad, Gujarat",multi-storey,200.0,36,False
+b8e2ce10-5511-45f5-9e30-9303762ce62f,Gota Public Parking 461,22.957111,72.535637,"184 Gota Road, Ahmedabad, Gujarat",underground,120.0,78,False
+1cafed59-0433-4ffc-a082-4b79bf7cd386,Navrangpura Public Parking 499,23.08262,72.629144,"80 Navrangpura Road, Ahmedabad, Gujarat",multi-storey,120.0,111,False
+49ab896a-b107-4aff-a5ee-d90c686771a0,Gopipura Public Parking 401,23.099841,72.474462,"211 Gopipura Road, Ahmedabad, Gujarat",surface,120.0,91,False
+8f813723-49fc-4df0-ac0c-798709ed7055,Amraiwadi Public Parking 114,23.015032,72.47697,"103 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,300.0,236,False
+85dcf21c-7724-40c9-8557-1d309ee7797f,Ellisbridge Public Parking 169,22.987897,72.588806,"143 Ellisbridge Road, Ahmedabad, Gujarat",on-street,75.0,22,False
+387f6440-47de-4155-89bd-c878ebb2b2cf,Gopipura Public Parking 481,23.065518,72.621859,"15 Gopipura Road, Ahmedabad, Gujarat",underground,75.0,21,False
+6a957b89-de5a-46a4-9f37-ebe91ecd14f1,Jamalpur Public Parking 374,22.956504,72.577383,"161 Jamalpur Road, Ahmedabad, Gujarat",on-street,250.0,127,False
+137f9dc8-155d-464b-95b9-841e2702b4fd,Gota Public Parking 363,23.102916,72.504214,"224 Gota Road, Ahmedabad, Gujarat",multi-storey,50.0,38,False
+f579ff62-cdc1-494b-8c73-c56690c7c9d0,Gopipura Public Parking 320,23.011918,72.482595,"161 Gopipura Road, Ahmedabad, Gujarat",underground,75.0,24,False
+e5a295e0-2bdb-47ca-93c6-2c9fd57c40ef,Memnagar Public Parking 284,23.063372,72.528713,"66 Memnagar Road, Ahmedabad, Gujarat",multi-storey,120.0,107,False
+eb281fe8-fc0a-4be1-8f98-9a0163054bc9,Gandhinagar Road Public Parking 427,23.054638,72.524171,"1 Gandhinagar Road Road, Ahmedabad, Gujarat",underground,150.0,65,False
+9406c90c-3b45-432a-9966-8b1a1783a8ce,Bodakdev Public Parking 262,23.029048,72.549589,"243 Bodakdev Road, Ahmedabad, Gujarat",underground,100.0,30,False
+ae38bb29-95fd-4b82-8350-5f359ee54a41,Thaltej Public Parking 345,22.965876,72.64136,"159 Thaltej Road, Ahmedabad, Gujarat",surface,120.0,21,False
+31aee19c-6abc-45e5-b04a-88a864f68ca6,Nikol Public Parking 234,22.991623,72.555525,"213 Nikol Road, Ahmedabad, Gujarat",on-street,120.0,47,False
+d926d734-873e-47ef-a69d-bad259146342,Satellite Public Parking 458,22.991477,72.58809,"55 Satellite Road, Ahmedabad, Gujarat",on-street,250.0,193,False
+fb930869-9400-4935-80f2-64df19be8172,Maninagar Public Parking 234,22.958537,72.514856,"69 Maninagar Road, Ahmedabad, Gujarat",underground,300.0,281,False
+02219d72-05bb-4bf1-bf16-be1d4aa24652,Vastral Public Parking 418,23.111507,72.630457,"259 Vastral Road, Ahmedabad, Gujarat",multi-storey,250.0,135,False
+5a704935-f8d4-4456-b6cb-d33d934b237d,Vejalpur Public Parking 385,23.076421,72.555441,"127 Vejalpur Road, Ahmedabad, Gujarat",multi-storey,150.0,77,False
+09f13386-b741-4f47-8d3f-a80e188c3150,Memnagar Public Parking 121,22.996682,72.483947,"140 Memnagar Road, Ahmedabad, Gujarat",multi-storey,200.0,107,False
+4a7b8730-6679-444f-b55c-e681be32e78e,Paldi Public Parking 362,22.975641,72.538946,"110 Paldi Road, Ahmedabad, Gujarat",on-street,75.0,26,False
+f0301a7b-3f2c-4605-81b2-ea18ba4d5038,Navrangpura Public Parking 200,23.020682,72.50723,"300 Navrangpura Road, Ahmedabad, Gujarat",on-street,50.0,36,False
+502041dc-6cba-482c-aadc-8000932be257,Memnagar Public Parking 386,23.031087,72.639693,"200 Memnagar Road, Ahmedabad, Gujarat",multi-storey,250.0,177,False
+2e7a2123-a89b-4d9f-b227-bde12f565aa0,Amraiwadi Public Parking 15,23.032999,72.519128,"200 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,200.0,153,False
+e1da6324-f0c5-46bc-a943-d715528ca85a,Vastral Public Parking 274,23.092886,72.635517,"14 Vastral Road, Ahmedabad, Gujarat",surface,250.0,161,False
+c80fdcf7-54cf-4314-9125-f0ae554060ed,Sabarmati Public Parking 94,23.059267,72.494426,"26 Sabarmati Road, Ahmedabad, Gujarat",underground,150.0,36,False
+6f9d37f2-40ad-4a45-83e1-2101fbd374a5,Vejalpur Public Parking 386,23.007375,72.628335,"216 Vejalpur Road, Ahmedabad, Gujarat",surface,150.0,70,False
+da4cb0c4-4c89-43b3-9abf-df88e26086a4,Nikol Public Parking 400,23.119984,72.532993,"21 Nikol Road, Ahmedabad, Gujarat",surface,50.0,11,False
+8bbbc6c1-dfdc-49af-81b5-60ed47a41bed,Amraiwadi Public Parking 343,23.055627,72.512938,"59 Amraiwadi Road, Ahmedabad, Gujarat",underground,120.0,33,False
+b91b5397-e554-4005-bbe4-53cf0b29c163,Maninagar Public Parking 399,22.978524,72.579305,"84 Maninagar Road, Ahmedabad, Gujarat",on-street,,42,False
+1da49eb9-64d1-4cf6-af96-ff4c603c3a77,Nikol Public Parking 304,23.017431,72.598703,"125 Nikol Road, Ahmedabad, Gujarat",surface,75.0,24,False
+bfe85e8c-749c-4a8a-a8f4-c014bc31b65d,Gota Public Parking 178,23.085359,72.571868,"273 Gota Road, Ahmedabad, Gujarat",underground,250.0,28,False
+b436b549-b6c1-4085-bfe9-920c9411dfe2,Amraiwadi Public Parking 55,22.952151,72.545611,"222 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,200.0,159,False
+cc1925d8-c4fa-4f03-b671-5d162825be06,Vejalpur Public Parking 316,23.024033,72.602083,"276 Vejalpur Road, Ahmedabad, Gujarat",underground,300.0,237,False
+dfe9396b-1596-48aa-8ded-c973d5c04a4c,Nikol Public Parking 143,23.004792,72.514189,"231 Nikol Road, Ahmedabad, Gujarat",on-street,120.0,67,False
+4aa731c4-6e4c-4aae-aa24-fdefedecb3d2,Gopipura Public Parking 94,23.007187,72.558975,"250 Gopipura Road, Ahmedabad, Gujarat",underground,120.0,33,False
+b054ea79-5133-4caa-8b2f-24648a9b7e6d,Vejalpur Public Parking 285,23.099654,72.596213,"6 Vejalpur Road, Ahmedabad, Gujarat",on-street,400.0,50,False
+c84107eb-1311-4e10-ae4e-3c4dea2bae00,Amraiwadi Public Parking 331,23.033058,72.60647,"252 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,300.0,40,False
+d8f5d264-9257-48ad-aa65-18c60483705b,Isanpur Public Parking 189,23.018748,72.513795,"243 Isanpur Road, Ahmedabad, Gujarat",underground,400.0,173,False
+36a82d69-d7f3-4171-bee4-53925d36dd79,Memnagar Public Parking 129,23.009808,72.551674,"119 Memnagar Road, Ahmedabad, Gujarat",multi-storey,75.0,25,False
+77b404dc-2220-44c4-a13c-c9427875b4b8,Vejalpur Public Parking 371,22.982562,72.602949,"269 Vejalpur Road, Ahmedabad, Gujarat",underground,150.0,119,False
+b8290017-b2a5-4f95-8103-7ee6ab31b11e,Satellite Public Parking 363,22.988672,72.502299,"274 Satellite Road, Ahmedabad, Gujarat",underground,100.0,92,False
+23401e78-07d7-4df9-934a-978ce9d3efc1,Amraiwadi Public Parking 53,23.068561,72.49273,"7 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,150.0,66,False
+fd83d78a-7ed4-4214-b5e4-dbcb71279e7b,Amraiwadi Public Parking 59,23.114135,72.515446,"34 Amraiwadi Road, Ahmedabad, Gujarat",surface,250.0,142,False
+7e1a0c82-6b56-40cd-a7e6-d6c494ff754d,Memnagar Public Parking 44,22.975794,72.616006,"128 Memnagar Road, Ahmedabad, Gujarat",multi-storey,75.0,31,False
+ebdc7195-5f70-488c-88dd-a273f09900dc,Sabarmati Public Parking 153,23.081868,72.538468,"220 Sabarmati Road, Ahmedabad, Gujarat",surface,150.0,15,False
+1d0079f0-1d8e-4886-b05a-931cf57c2fe4,Bodakdev Public Parking 136,23.11109,72.507402,"42 Bodakdev Road, Ahmedabad, Gujarat",multi-storey,100.0,54,False
+f1dc6e32-40d7-4240-8026-a1d5f92b775b,Vastral Public Parking 241,22.950455,72.551091,"150 Vastral Road, Ahmedabad, Gujarat",on-street,50.0,34,False
+8fe644e3-aa79-49f8-ac86-81a40ab72345,Vejalpur Public Parking 404,22.962101,72.512016,"102 Vejalpur Road, Ahmedabad, Gujarat",underground,,61,False
+9661dec6-e861-4483-9d9d-02a9dbae27fe,Naranpura Public Parking 406,23.090527,72.482854,"158 Naranpura Road, Ahmedabad, Gujarat",underground,150.0,70,False
+1c10af3c-a002-4cf3-9ff5-6f559db051e6,GIDC Public Parking 277,23.068955,72.639682,"253 GIDC Road, Ahmedabad, Gujarat",underground,,40,False
+0545f43a-a6d5-46c3-8f97-e4e39df76482,Thaltej Public Parking 493,23.052631,72.474656,"295 Thaltej Road, Ahmedabad, Gujarat",underground,50.0,32,False
+74d99415-ef61-4af8-83b3-45d469916dbc,Naranpura Public Parking 241,23.047962,72.60736,"266 Naranpura Road, Ahmedabad, Gujarat",on-street,300.0,64,False
+3a7e31ae-3ba2-4785-8952-f5cb393856f8,Nikol Public Parking 241,23.057913,72.558511,"179 Nikol Road, Ahmedabad, Gujarat",multi-storey,250.0,163,False
+f3be1653-a1e8-4348-86c1-ef6cf383fc8a,Memnagar Public Parking 340,23.006067,72.594861,"206 Memnagar Road, Ahmedabad, Gujarat",underground,,17,False
+ee14321d-4fd3-45b5-bf0f-21bba870a451,GIDC Public Parking 423,22.969707,72.609059,"1 GIDC Road, Ahmedabad, Gujarat",underground,400.0,39,False
+c9b69ace-06ac-4c89-ae10-189a4ce096a1,Sabarmati Public Parking 390,23.055848,72.559729,"27 Sabarmati Road, Ahmedabad, Gujarat",underground,120.0,20,False
+bb3cbdef-66b6-4a91-9b8a-b157f5e254e4,Maninagar Public Parking 15,23.02448,72.595685,"123 Maninagar Road, Ahmedabad, Gujarat",on-street,100.0,6,False
+021d9442-e524-4541-aa03-85b56882ed39,Maninagar Public Parking 237,22.965846,72.648606,"61 Maninagar Road, Ahmedabad, Gujarat",underground,100.0,69,False
+8a2f1259-1bc1-495a-ad3f-667d788affdc,Amraiwadi Public Parking 125,23.020633,72.55685,"234 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,400.0,88,False
+11795393-09fb-459d-82c1-e1fcb8f2f724,Navrangpura Public Parking 175,23.096885,72.519725,"260 Navrangpura Road, Ahmedabad, Gujarat",underground,150.0,45,False
+708a1db2-a650-4eba-9762-916d9819b049,Amraiwadi Public Parking 444,23.092371,72.574386,"77 Amraiwadi Road, Ahmedabad, Gujarat",on-street,300.0,108,False
+70017d3f-9494-425b-9bb2-5d95360c41bc,Bodakdev Public Parking 358,23.027409,72.52792,"123 Bodakdev Road, Ahmedabad, Gujarat",surface,250.0,186,False
+f9785e14-c4d9-4197-b532-b96e6d797dca,Ellisbridge Public Parking 198,23.00409,72.555136,"78 Ellisbridge Road, Ahmedabad, Gujarat",underground,300.0,49,False
+a88654be-e87b-4e8a-a650-c7bee13d9d76,Sabarmati Public Parking 52,23.097849,72.627354,"270 Sabarmati Road, Ahmedabad, Gujarat",multi-storey,,42,False
+a20d9a26-62dd-4b85-af3b-914221701875,Vejalpur Public Parking 174,22.962721,72.610675,"204 Vejalpur Road, Ahmedabad, Gujarat",on-street,75.0,61,False
+7be673c2-85cf-4b14-b8ec-19cbdcc3ca64,Amraiwadi Public Parking 447,23.112204,72.582824,"278 Amraiwadi Road, Ahmedabad, Gujarat",underground,50.0,13,False
+17073740-bf6a-4364-aab0-e942efd29830,Navrangpura Public Parking 51,23.119562,72.604418,"52 Navrangpura Road, Ahmedabad, Gujarat",surface,300.0,95,False
+62634e2e-1f06-4a63-8b65-8e2e1cc8a453,Memnagar Public Parking 184,22.957818,72.613306,"192 Memnagar Road, Ahmedabad, Gujarat",multi-storey,250.0,132,False
+3dec2d08-1a92-4c08-9da4-46519a6d0f2f,Ellisbridge Public Parking 318,22.978897,72.484214,"124 Ellisbridge Road, Ahmedabad, Gujarat",on-street,300.0,53,False
+8a86bc0a-c028-4d9a-b699-69eee71fad77,Satellite Public Parking 461,23.058444,72.552723,"239 Satellite Road, Ahmedabad, Gujarat",on-street,150.0,28,False
+ea891ea6-930d-4b08-87c6-e6645e99c294,Memnagar Public Parking 328,23.11069,72.647777,"218 Memnagar Road, Ahmedabad, Gujarat",on-street,150.0,48,False
+9016b3c2-5e15-46df-a846-8267cc3db4d7,Ellisbridge Public Parking 293,23.095067,72.489198,"184 Ellisbridge Road, Ahmedabad, Gujarat",on-street,150.0,47,False
+7ba0e67a-3420-4be3-8f7b-05f90c47bc65,Gota Public Parking 467,22.996662,72.571867,"255 Gota Road, Ahmedabad, Gujarat",underground,150.0,38,False
+0bcc9cbf-105c-402f-b309-e9438a929e4e,Vejalpur Public Parking 348,22.987231,72.504224,"71 Vejalpur Road, Ahmedabad, Gujarat",underground,75.0,47,False
+926c3218-a649-4778-a846-07ff311c7d90,Jamalpur Public Parking 375,23.084064,72.476006,"68 Jamalpur Road, Ahmedabad, Gujarat",on-street,75.0,25,False
+10d59c67-0dd1-407b-94c9-a3ef14e933b5,Gandhinagar Road Public Parking 449,22.979859,72.493789,"188 Gandhinagar Road Road, Ahmedabad, Gujarat",multi-storey,400.0,118,False
+53bc8c86-25b2-4b7d-a8c5-d90aefe242bb,Amraiwadi Public Parking 496,22.993685,72.618444,"152 Amraiwadi Road, Ahmedabad, Gujarat",surface,200.0,94,False
+5e9f36bd-00f2-48a0-b929-b7bef188b8e3,Ellisbridge Public Parking 496,22.973929,72.64397,"286 Ellisbridge Road, Ahmedabad, Gujarat",surface,,22,False
+4627897e-b35b-4427-a936-f112b795b1f8,Vejalpur Public Parking 300,23.027314,72.591109,"196 Vejalpur Road, Ahmedabad, Gujarat",underground,,47,False
+83c988f9-d0f6-4026-812c-b2a6274976ef,Nikol Public Parking 326,23.105594,72.509846,"238 Nikol Road, Ahmedabad, Gujarat",surface,150.0,23,False
+3bbe9162-32cf-4a1c-b9cd-346c4435bbde,Amraiwadi Public Parking 60,23.110864,72.524786,"50 Amraiwadi Road, Ahmedabad, Gujarat",on-street,120.0,20,False
+413bd8f5-11b5-485f-b194-ca3f06c9fdf0,Gandhinagar Road Public Parking 215,23.013072,72.640889,"80 Gandhinagar Road Road, Ahmedabad, Gujarat",on-street,250.0,200,False
+64b85065-47ce-4e68-bc73-1002c249138c,Jamalpur Public Parking 112,23.109639,72.520353,"228 Jamalpur Road, Ahmedabad, Gujarat",surface,300.0,245,False
+88b74e8a-920e-487c-8275-ae2d7a8e86ca,Jamalpur Public Parking 32,23.116758,72.53612,"204 Jamalpur Road, Ahmedabad, Gujarat",on-street,150.0,23,False
+ae23cc45-b3a0-490d-a9e6-183747800fb0,Vastral Public Parking 498,22.965584,72.508179,"11 Vastral Road, Ahmedabad, Gujarat",multi-storey,50.0,13,False
+bccfd770-6ed2-4a2d-ba9f-1a5f5fab4111,Gandhinagar Road Public Parking 107,23.083786,72.506937,"111 Gandhinagar Road Road, Ahmedabad, Gujarat",surface,120.0,21,False
+2a3334ec-7658-4940-84fd-47bbf3b956a9,Paldi Public Parking 277,22.997137,72.647125,"129 Paldi Road, Ahmedabad, Gujarat",underground,,10,False
+4788e3b0-bb64-4c63-964f-29fb97959589,Gopipura Public Parking 9,23.084297,72.512828,"90 Gopipura Road, Ahmedabad, Gujarat",surface,,104,False
+4e150924-109c-4a5f-ae12-dc4f78d84b37,GIDC Public Parking 304,23.030962,72.610043,"56 GIDC Road, Ahmedabad, Gujarat",surface,300.0,270,False
+0c568fdc-716e-49ab-aa62-6814d2062391,GIDC Public Parking 155,23.073631,72.633575,"235 GIDC Road, Ahmedabad, Gujarat",on-street,,155,False
+48893c8f-3eb4-4bae-974b-a6060a35b4f7,Sabarmati Public Parking 38,23.066637,72.558248,"42 Sabarmati Road, Ahmedabad, Gujarat",underground,200.0,21,False
+0dd2aed7-d1d7-4664-98fe-aa56bbb92773,Gopipura Public Parking 196,23.056134,72.575366,"272 Gopipura Road, Ahmedabad, Gujarat",surface,150.0,89,False
+c70c86a8-baf5-43bb-aff7-67b187a7941e,Gandhinagar Road Public Parking 370,23.084826,72.490595,"111 Gandhinagar Road Road, Ahmedabad, Gujarat",underground,250.0,63,False
+94607a89-37db-4a9b-bff4-009c18eef9e2,Maninagar Public Parking 161,23.090661,72.541771,"219 Maninagar Road, Ahmedabad, Gujarat",multi-storey,200.0,77,False
+b7249dbe-b8cc-49af-9744-1254f40fde2d,Nikol Public Parking 426,23.06676,72.555368,"44 Nikol Road, Ahmedabad, Gujarat",underground,75.0,54,False
+77b0705b-e637-4226-a8d2-3d1c7e49feab,Isanpur Public Parking 490,23.088001,72.570147,"288 Isanpur Road, Ahmedabad, Gujarat",underground,400.0,64,False
+8692051e-d1da-4a9b-abbf-ca6129b1c302,Navrangpura Public Parking 445,23.098513,72.639403,"27 Navrangpura Road, Ahmedabad, Gujarat",multi-storey,150.0,54,False
+b2e3c438-666a-4f5a-8929-f4d24b982a7f,Maninagar Public Parking 180,22.976304,72.556794,"285 Maninagar Road, Ahmedabad, Gujarat",on-street,,83,False
+b6bbaba7-e072-45ce-bfa9-eb905b74f6ff,Vastral Public Parking 315,23.093676,72.645418,"286 Vastral Road, Ahmedabad, Gujarat",underground,50.0,32,False
+37abddc5-9753-49b1-a31b-6d3d2dbbe0c3,Memnagar Public Parking 472,22.954922,72.519189,"174 Memnagar Road, Ahmedabad, Gujarat",on-street,,55,False
+b30304e2-e3aa-4984-9f9b-8648c5f5355e,Satellite Public Parking 47,22.96183,72.603374,"272 Satellite Road, Ahmedabad, Gujarat",multi-storey,120.0,54,False
+ffd31d30-e5f3-41f7-81f9-6aeeb2b792d8,Isanpur Public Parking 306,23.012909,72.599887,"44 Isanpur Road, Ahmedabad, Gujarat",surface,50.0,36,False
+f4535eb1-f3a0-4bb0-b8b3-75924c9913dc,Navrangpura Public Parking 249,23.064575,72.518979,"227 Navrangpura Road, Ahmedabad, Gujarat",surface,250.0,182,False
+88fd5212-80c9-4bb6-b5be-b23bdbeb6de8,Isanpur Public Parking 250,23.008679,72.48996,"270 Isanpur Road, Ahmedabad, Gujarat",surface,,177,False
+1a785067-96ec-43eb-a750-6f52783377c6,Bodakdev Public Parking 393,22.951307,72.524255,"71 Bodakdev Road, Ahmedabad, Gujarat",on-street,150.0,23,False
+27cab9c5-66f9-46db-a792-e53a4b22d304,Ellisbridge Public Parking 273,23.076992,72.501625,"118 Ellisbridge Road, Ahmedabad, Gujarat",underground,400.0,260,False
+25576ed1-d70c-4f3a-a836-47bdd6427ffd,Gota Public Parking 224,22.962253,72.625118,"10 Gota Road, Ahmedabad, Gujarat",on-street,300.0,247,False
+d29dc4b2-cea2-4fa4-8d51-e97e04cab622,Navrangpura Public Parking 149,23.047478,72.59771,"59 Navrangpura Road, Ahmedabad, Gujarat",on-street,,35,False
+154e9893-e417-483e-a386-e02cb2e9fbfa,Nikol Public Parking 224,23.091444,72.635559,"55 Nikol Road, Ahmedabad, Gujarat",surface,120.0,49,False
+4deb70a7-0cec-46dc-bc55-1ab40435e314,Gopipura Public Parking 114,23.01728,72.525849,"171 Gopipura Road, Ahmedabad, Gujarat",multi-storey,,26,False
+607be170-849b-4806-b7ad-5b3db2589697,Paldi Public Parking 121,23.104007,72.532888,"53 Paldi Road, Ahmedabad, Gujarat",multi-storey,100.0,20,False
+a6f527a2-010b-4e6b-92d3-8a6c64908d3f,Naranpura Public Parking 488,23.079237,72.587992,"253 Naranpura Road, Ahmedabad, Gujarat",on-street,300.0,220,False
+8cd6f2ac-cdef-4e30-bc5d-2c7990c1ac56,Vastral Public Parking 166,23.065793,72.628769,"162 Vastral Road, Ahmedabad, Gujarat",underground,100.0,47,False
+9b297429-2f81-475a-87c4-fc2741752b57,Jamalpur Public Parking 260,23.085376,72.576456,"38 Jamalpur Road, Ahmedabad, Gujarat",underground,150.0,12,False
+c2938bbe-c9ce-46f4-a112-d31a31eb12c3,Nikol Public Parking 315,23.091388,72.483812,"260 Nikol Road, Ahmedabad, Gujarat",surface,250.0,137,False
+5c7715b3-aefb-435d-9624-7af7184c9832,Bodakdev Public Parking 165,23.026455,72.615767,"244 Bodakdev Road, Ahmedabad, Gujarat",surface,400.0,42,False
+d627dd21-1e69-4f44-aa51-c3eb3cff6ec9,Nikol Public Parking 259,23.087864,72.620728,"89 Nikol Road, Ahmedabad, Gujarat",on-street,50.0,22,False
+c7348a63-a743-46c2-a648-154fc7f14f77,Jamalpur Public Parking 191,23.039092,72.579765,"145 Jamalpur Road, Ahmedabad, Gujarat",surface,250.0,88,False
+b71363e2-72ce-4a70-bd2f-8586c7ef76d8,Nikol Public Parking 169,23.084169,72.586515,"49 Nikol Road, Ahmedabad, Gujarat",multi-storey,400.0,122,False
+4af61047-eea5-44be-a9a4-eeaa1b16a559,Paldi Public Parking 470,23.006672,72.574893,"180 Paldi Road, Ahmedabad, Gujarat",on-street,150.0,101,False
+eadf4967-c09d-49ea-9e41-98ac3facc7b3,Nikol Public Parking 159,22.971922,72.59759,"287 Nikol Road, Ahmedabad, Gujarat",multi-storey,250.0,86,False
+d942928c-802b-4795-bfae-be22f2a44d54,GIDC Public Parking 48,23.06392,72.619213,"217 GIDC Road, Ahmedabad, Gujarat",multi-storey,400.0,150,False
+527eb776-3771-4bd2-b69e-45ece4a446ca,Amraiwadi Public Parking 99,23.111699,72.531512,"116 Amraiwadi Road, Ahmedabad, Gujarat",surface,100.0,31,False
+aec12ff9-3dc0-4731-8a91-e62f999d6e53,GIDC Public Parking 20,23.036307,72.567159,"173 GIDC Road, Ahmedabad, Gujarat",multi-storey,100.0,18,False
+b6870420-14f1-4c4e-bc06-59dac4d30dbd,Naranpura Public Parking 370,23.091329,72.608798,"225 Naranpura Road, Ahmedabad, Gujarat",multi-storey,50.0,32,False
+bb58069c-91b0-4bd5-9c89-2704309291a1,Sabarmati Public Parking 120,23.11483,72.579907,"274 Sabarmati Road, Ahmedabad, Gujarat",on-street,120.0,93,False
+a364cc9b-29ae-4126-9d01-3e65321d11ae,Isanpur Public Parking 226,23.103676,72.504923,"237 Isanpur Road, Ahmedabad, Gujarat",on-street,150.0,75,False
+d255a6f3-b3b7-41dc-9833-be96fb90a8c7,Vastral Public Parking 71,23.114266,72.61704,"129 Vastral Road, Ahmedabad, Gujarat",surface,50.0,41,False
+b84aabc2-5f0a-47b6-9e97-e6dba126dd19,Maninagar Public Parking 146,23.070938,72.562864,"43 Maninagar Road, Ahmedabad, Gujarat",multi-storey,100.0,86,False
+a7d3627d-1bc8-45cd-a5e4-d5a7d6fa7edf,Thaltej Public Parking 419,23.091278,72.486508,"231 Thaltej Road, Ahmedabad, Gujarat",on-street,200.0,84,False
+c3e2b983-f914-4d91-9bba-27aa2a81cc0b,Nikol Public Parking 192,23.035341,72.51244,"115 Nikol Road, Ahmedabad, Gujarat",underground,50.0,6,False
+1b0100e5-812e-49cc-bc78-9bdc4435c215,Memnagar Public Parking 470,23.084535,72.494768,"242 Memnagar Road, Ahmedabad, Gujarat",surface,100.0,47,False
+c16350f0-94fa-487b-a0cf-b33e4764cb13,Bodakdev Public Parking 428,23.103996,72.473421,"77 Bodakdev Road, Ahmedabad, Gujarat",on-street,400.0,239,False
+a46eb798-d999-4c2e-80fc-ee40343b77c4,Memnagar Public Parking 63,22.968902,72.521858,"25 Memnagar Road, Ahmedabad, Gujarat",on-street,120.0,91,False
+cae13f8c-4341-4e08-a3e0-46070b7649c9,Amraiwadi Public Parking 306,22.960677,72.620604,"275 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,50.0,28,False
+7e0f8de4-61eb-4aa1-98ad-60a2ca986f60,Jamalpur Public Parking 124,22.999516,72.470282,"293 Jamalpur Road, Ahmedabad, Gujarat",underground,250.0,162,False
+cc553fe5-a516-4b62-a461-709bcfb98935,GIDC Public Parking 403,22.961505,72.564691,"260 GIDC Road, Ahmedabad, Gujarat",on-street,,26,False
+10b83994-df9e-4acb-b83f-0c22f215a9b5,Satellite Public Parking 183,23.116777,72.515657,"35 Satellite Road, Ahmedabad, Gujarat",surface,200.0,128,False
+e72a7f99-93c2-4ac0-b6fe-ba2d5fb93e8b,Gopipura Public Parking 69,23.081155,72.602334,"23 Gopipura Road, Ahmedabad, Gujarat",multi-storey,200.0,156,False
+c38e5ec9-0235-4aa4-81ad-805536c3e84c,Amraiwadi Public Parking 324,23.091165,72.593243,"94 Amraiwadi Road, Ahmedabad, Gujarat",multi-storey,,25,False
+2a1e5805-4c31-4712-880c-80fe9ef0680c,Gota Public Parking 162,22.957447,72.505905,"159 Gota Road, Ahmedabad, Gujarat",on-street,400.0,313,False
+50ba92d8-c1e5-45e3-a1c5-d78579d89c2f,Bodakdev Public Parking 147,22.993063,72.605592,"183 Bodakdev Road, Ahmedabad, Gujarat",surface,50.0,17,False
+62ea59ee-affd-460c-8e48-e627b9c55c5e,Ellisbridge Public Parking 381,23.085888,72.548651,"226 Ellisbridge Road, Ahmedabad, Gujarat",on-street,250.0,54,False
+861d7271-7e94-41ee-bf8b-d1e81697a0d2,Vejalpur Public Parking 411,23.012449,72.613512,"43 Vejalpur Road, Ahmedabad, Gujarat",underground,,53,False
+41472a37-a132-47fe-867b-57021a901358,Memnagar Public Parking 157,22.967442,72.529026,"229 Memnagar Road, Ahmedabad, Gujarat",on-street,250.0,112,False
+7635d33a-ee93-468e-928e-86ced79a488f,Jamalpur Public Parking 315,22.9572,72.626607,"223 Jamalpur Road, Ahmedabad, Gujarat",surface,150.0,114,False
+81aa1a92-01de-4a36-8baf-09dec0e920ee,Jamalpur Public Parking 263,22.962757,72.584752,"82 Jamalpur Road, Ahmedabad, Gujarat",on-street,50.0,29,False
+61a851ce-686c-44a4-afce-24bd5719aea0,Jamalpur Public Parking 186,22.955916,72.482102,"197 Jamalpur Road, Ahmedabad, Gujarat",underground,50.0,33,False
+54cff695-fcce-49de-850b-510c200ad873,Isanpur Public Parking 71,23.013242,72.607355,"272 Isanpur Road, Ahmedabad, Gujarat",multi-storey,200.0,126,False
+9c029b60-c635-4e03-bc32-36607c84f88e,Naranpura Public Parking 256,23.113288,72.474664,"266 Naranpura Road, Ahmedabad, Gujarat",underground,250.0,38,False
+f3d23822-0cf9-4bdb-9a0f-525ba9a868d9,Vastral Public Parking 147,23.069686,72.508623,"252 Vastral Road, Ahmedabad, Gujarat",on-street,120.0,98,False
+6c573554-a429-49e2-8dd8-2d2e36b65522,Nikol Public Parking 415,22.979352,72.598407,"164 Nikol Road, Ahmedabad, Gujarat",underground,200.0,108,False
+2dae64fe-6b60-49f2-80ea-472b698d3925,Naranpura Public Parking 407,23.101526,72.623245,"186 Naranpura Road, Ahmedabad, Gujarat",multi-storey,400.0,374,False

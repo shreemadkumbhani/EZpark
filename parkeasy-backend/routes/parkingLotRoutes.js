@@ -18,11 +18,11 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    // Allow optional radius in meters but cap strictly to 2000m
+    // Allow optional radius in meters but cap strictly to 5000m
     let radius = parseInt(req.query.radius, 10);
-    if (Number.isNaN(radius) || radius <= 0) radius = 2000;
-    // Enforce hard cap at 2000m (2km)
-    radius = Math.min(radius, 2000);
+    if (Number.isNaN(radius) || radius <= 0) radius = 5000;
+    // Enforce hard cap at 5000m (5km)
+    radius = Math.min(radius, 5000);
     // Use $near query to find lots sorted by distance
     const lots = await ParkingLot.find({
       location: {
@@ -42,6 +42,19 @@ router.get("/", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching parking lots", error: err.message });
+  }
+});
+
+// GET /api/parkinglots/all
+// Returns all parking lots for map display (no location filter)
+router.get("/all", async (req, res) => {
+  try {
+    const lots = await ParkingLot.find({}).sort({ name: 1 });
+    res.json({ parkingLots: lots });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching all parking lots", error: err.message });
   }
 });
 

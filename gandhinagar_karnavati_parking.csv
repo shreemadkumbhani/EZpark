@@ -1,0 +1,51 @@
+id,name,lat,lon,address,type,totalSlots,availableSlots,osm_source
+72a64cd7-66b0-4750-84d5-22c94d400499,Karnavati University Main Parking,23.1665,72.636,"Karnavati University Campus, Uvarsad, Gandhinagar",campus,250,58,False
+13bc62e7-9535-412b-86c5-43cf6c5fe7f4,Karnavati Hostel Parking,23.1672,72.6351,"KU Hostel Block, Uvarsad",hostel,200,101,False
+9e4703eb-ae3a-40aa-86a7-bad29fafa2f2,Uvarsad Bus Stand Parking,23.1648,72.6402,Uvarsad Bus Stand,public,250,53,False
+e402f547-bc37-4107-80af-f6d1f72d9e05,Gift City Road Parking,23.172,72.6415,Gift City Link Road,public,100,49,False
+ae4d5a43-dc8d-4069-ab8f-670e8bbceca5,PDPU Road Parking,23.1751,72.6289,"PDPU Road, Raysan",public,200,145,False
+4263b995-6469-44c8-bcf5-efbfb67d53a4,Uvarsad Parking Zone 18,23.16205,72.642212,"143 Uvarsad Road, Gandhinagar",commercial,100,19,False
+b7abb68c-7354-4f4e-b912-36b75c1025d3,Uvarsad Parking Zone 185,23.1615,72.645056,"21 Uvarsad Road, Gandhinagar",commercial,75,45,False
+2d9216a4-c6b4-4cd0-8dfe-c29632c94481,Uvarsad Parking Zone 346,23.163602,72.634425,"77 Uvarsad Road, Gandhinagar",commercial,75,50,False
+7ff9ba84-74b3-4f24-a71e-209b21e9e0d8,Uvarsad Parking Zone 234,23.162562,72.633252,"71 Uvarsad Road, Gandhinagar",commercial,150,63,False
+53defadc-8b13-44bd-950f-2cea70e85b02,Uvarsad Parking Zone 69,23.157385,72.626081,"59 Uvarsad Road, Gandhinagar",campus,150,61,False
+8f85a68b-fc12-441a-9143-6da3dc88ccfa,Uvarsad Parking Zone 342,23.171941,72.630804,"150 Uvarsad Road, Gandhinagar",commercial,120,72,False
+75ceb7bc-f223-4abe-bd99-8b4201dc36cf,Uvarsad Parking Zone 257,23.1578,72.637691,"50 Uvarsad Road, Gandhinagar",surface,120,42,False
+9d6280fe-c9ce-42ca-9a2b-478f0a92b7a9,Uvarsad Parking Zone 311,23.157238,72.635932,"178 Uvarsad Road, Gandhinagar",public,150,133,False
+642ac8e8-7a70-440a-9d52-4fe5018ecf77,Uvarsad Parking Zone 291,23.173603,72.628994,"105 Uvarsad Road, Gandhinagar",surface,50,11,False
+586c008b-83c4-4373-b72f-06a46af706e6,Uvarsad Parking Zone 98,23.165331,72.645639,"99 Uvarsad Road, Gandhinagar",commercial,120,69,False
+a9dfc6fd-5c02-4c2a-8294-9217ec37431e,Uvarsad Parking Zone 317,23.16141,72.631494,"143 Uvarsad Road, Gandhinagar",surface,50,22,False
+1f7eca9d-3e5c-4a49-b692-5451e2b120c7,Uvarsad Parking Zone 333,23.165615,72.629299,"54 Uvarsad Road, Gandhinagar",surface,120,56,False
+a4dfef55-958d-4700-849e-d77b4fec8759,Uvarsad Parking Zone 279,23.163061,72.630473,"192 Uvarsad Road, Gandhinagar",public,100,50,False
+51a92795-7ba9-45bd-a33f-141b5b98ea5d,Uvarsad Parking Zone 208,23.161352,72.631235,"159 Uvarsad Road, Gandhinagar",surface,120,75,False
+edab1d59-7c45-46c3-a25b-f1c0b0ff6374,Uvarsad Parking Zone 269,23.169967,72.630828,"79 Uvarsad Road, Gandhinagar",commercial,150,78,False
+9574ff21-6f16-4259-8d1f-ee915b85ff73,Uvarsad Parking Zone 237,23.157755,72.635788,"112 Uvarsad Road, Gandhinagar",surface,120,81,False
+64455408-a4ba-4e8e-b049-30b3fc9b5c40,Uvarsad Parking Zone 251,23.168199,72.636773,"189 Uvarsad Road, Gandhinagar",surface,150,71,False
+1d4733f2-ebf6-4612-837a-e0a6e9140227,Uvarsad Parking Zone 19,23.158473,72.64548,"10 Uvarsad Road, Gandhinagar",commercial,150,23,False
+12c574f2-7ce3-4fb6-ab21-b0c802d8db53,Uvarsad Parking Zone 56,23.157511,72.627855,"165 Uvarsad Road, Gandhinagar",commercial,120,29,False
+318afe61-01dc-4cfa-8c19-fe6ada7cc654,Uvarsad Parking Zone 257,23.165673,72.63473,"124 Uvarsad Road, Gandhinagar",campus,180,84,False
+bae6d7be-fa01-4004-9230-20a2c7357ecc,Uvarsad Parking Zone 217,23.174459,72.639957,"94 Uvarsad Road, Gandhinagar",surface,180,78,False
+90a071a9-1091-41d1-95eb-6871c9a863c1,Uvarsad Parking Zone 101,23.162961,72.626658,"174 Uvarsad Road, Gandhinagar",commercial,50,12,False
+be33dd83-7981-4cb7-9494-1af232b999d9,Uvarsad Parking Zone 127,23.175747,72.634707,"193 Uvarsad Road, Gandhinagar",campus,50,7,False
+e8a9d938-3e8e-4e8a-9a18-133c689c7ab6,Uvarsad Parking Zone 55,23.168445,72.637012,"83 Uvarsad Road, Gandhinagar",surface,180,140,False
+c51a88ce-3f25-4edd-b4d0-ede6743199cc,Uvarsad Parking Zone 99,23.159325,72.637903,"99 Uvarsad Road, Gandhinagar",surface,50,42,False
+1b95bba8-bdf3-4081-841d-5b6d021208a0,Uvarsad Parking Zone 50,23.160393,72.630154,"185 Uvarsad Road, Gandhinagar",campus,120,107,False
+59b541a9-9283-45c5-a418-b44bbe5d9c1e,Uvarsad Parking Zone 370,23.171528,72.642547,"118 Uvarsad Road, Gandhinagar",commercial,180,160,False
+619e6940-cf6f-46a6-b690-8d894fa1ddb5,Uvarsad Parking Zone 60,23.16067,72.637951,"170 Uvarsad Road, Gandhinagar",public,75,34,False
+a0d1c947-3812-46ce-89da-649d223dfdf7,Uvarsad Parking Zone 334,23.168695,72.643499,"61 Uvarsad Road, Gandhinagar",public,120,23,False
+5f2d4306-04f9-44f8-9f70-4e87a63bf8d6,Uvarsad Parking Zone 185,23.172978,72.63296,"126 Uvarsad Road, Gandhinagar",commercial,75,47,False
+2ca5c47e-51ab-4805-a7fa-d2685006d04f,Uvarsad Parking Zone 151,23.171489,72.635334,"139 Uvarsad Road, Gandhinagar",commercial,150,131,False
+5efbe89e-792a-4de7-bc97-28f0ae701eaa,Uvarsad Parking Zone 175,23.161772,72.634833,"99 Uvarsad Road, Gandhinagar",campus,120,69,False
+b7759145-6928-4016-a79d-18c3fd167b20,Uvarsad Parking Zone 43,23.173566,72.637744,"186 Uvarsad Road, Gandhinagar",campus,180,121,False
+e75c7db2-29d5-44ff-998c-15f493fbe1e0,Uvarsad Parking Zone 309,23.174718,72.62937,"116 Uvarsad Road, Gandhinagar",public,150,123,False
+d8e9452f-d5d9-4fb3-9b59-73443cf22cde,Uvarsad Parking Zone 303,23.171171,72.632123,"93 Uvarsad Road, Gandhinagar",campus,50,30,False
+993642ea-51de-4c52-83f4-6013f98a8889,Uvarsad Parking Zone 96,23.168706,72.631646,"71 Uvarsad Road, Gandhinagar",surface,100,22,False
+2f71aa36-771e-4e3b-86fe-92b3323fe428,Uvarsad Parking Zone 28,23.167622,72.642343,"66 Uvarsad Road, Gandhinagar",public,120,36,False
+d9ebeeef-2cfa-4666-bf62-b663066893c3,Uvarsad Parking Zone 304,23.167891,72.645678,"14 Uvarsad Road, Gandhinagar",commercial,75,28,False
+4a125487-6073-4382-88cf-7d4773d50fdd,Uvarsad Parking Zone 268,23.17346,72.637485,"154 Uvarsad Road, Gandhinagar",campus,50,42,False
+4b2d37d5-6635-4eb1-bf4d-4877f78e3645,Uvarsad Parking Zone 204,23.157503,72.637304,"93 Uvarsad Road, Gandhinagar",surface,75,14,False
+f9a2d156-a6b9-4ce3-bbe7-7fc9efbee18c,Uvarsad Parking Zone 85,23.168621,72.64329,"17 Uvarsad Road, Gandhinagar",campus,50,30,False
+e4820fd6-06d5-4fa6-a446-0460428e60c4,Uvarsad Parking Zone 31,23.165285,72.643618,"47 Uvarsad Road, Gandhinagar",commercial,180,138,False
+2d94e28e-d057-4c9b-ac0a-124aa664bfd4,Uvarsad Parking Zone 310,23.168697,72.640451,"54 Uvarsad Road, Gandhinagar",campus,120,55,False
+1ad0a857-cd35-40dc-9d8a-853ec4573672,Uvarsad Parking Zone 199,23.175613,72.636256,"59 Uvarsad Road, Gandhinagar",public,120,94,False
+67839d69-6dfc-4688-bba8-a831390a7cf3,Uvarsad Parking Zone 96,23.159551,72.644644,"173 Uvarsad Road, Gandhinagar",surface,150,69,False
