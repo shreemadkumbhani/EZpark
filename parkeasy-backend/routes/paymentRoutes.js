@@ -1,191 +1,133 @@
-// Payment routes for Razorpay integration
 const express = require("express");
-const router = express.Router();
-const Razorpay = require("razorpay");
 const crypto = require("crypto");
-const requireAuth = require("../middleware/authMiddleware");
+const Razorpay = require("razorpay");
+const auth = require("../middleware/authMiddleware");
 const Booking = require("../models/Booking");
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_dummy",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "dummy_secret",
+const router = express.Router();
+
+const { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } = process.env;
+
+// Lazy init instance to allow startup without keys (non-payment flows)
+let razorpayInstance = null;
+function getRazorpay() {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+    throw new Error("Razorpay keys not configured");
+  }
+  if (!razorpayInstance) {
+    razorpayInstance = new Razorpay({
+      key_id: RAZORPAY_KEY_ID,
+      key_secret: RAZORPAY_KEY_SECRET,
+    });
+  }
+  return razorpayInstance;
+}
+
+// Public endpoint to fetch publishable key for frontend
+router.get("/key", (req, res) => {
+  if (!RAZORPAY_KEY_ID) {
+    return res.status(500).json({ message: "Razorpay key not configured" });
+  }
+  res.json({ keyId: RAZORPAY_KEY_ID });
 });
 
-// POST /api/payments/create-order
-// Create a Razorpay order for a booking
-router.post("/create-order", requireAuth, async (req, res) => {
+// Create an order for a booking
+router.post("/order", auth, async (req, res) => {
   try {
-    const { bookingId, amount } = req.body;
+    const { bookingId } = req.body;
+    if (!bookingId)
+      return res.status(400).json({ message: "bookingId is required" });
 
-    if (!bookingId || !amount) {
-      return res
-        .status(400)
-        .json({ message: "Booking ID and amount required" });
-    }
-
-    // Verify booking belongs to user
     const booking = await Booking.findOne({
       _id: bookingId,
       userId: req.user.id,
     });
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    if (booking.paymentStatus === "paid")
+      return res.status(400).json({ message: "Booking already paid" });
 
-    // Create Razorpay order
-    const options = {
-      amount: Math.round(amount * 100), // amount in paise
+    const instance = getRazorpay();
+    const amountPaise = Math.max(1, Math.round(booking.totalPrice * 100)); // in paise
+
+    const order = await instance.orders.create({
+      amount: amountPaise,
       currency: "INR",
-      receipt: `booking_${bookingId}`,
+      receipt: booking._id.toString(),
       notes: {
-        bookingId: bookingId.toString(),
-        userId: req.user.id,
+        bookingId: booking._id.toString(),
+        parkingLotId: booking.parkingLotId.toString(),
+        userId: booking.userId.toString(),
       },
-    };
+    });
 
-    const order = await razorpay.orders.create(options);
-
-    // Update booking with order ID
-    booking.razorpayOrderId = order.id;
+    booking.paymentProvider = "razorpay";
+    booking.paymentOrderId = order.id;
     await booking.save();
 
-    res.json({
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      key: process.env.RAZORPAY_KEY_ID || "rzp_test_dummy",
-    });
-  } catch (error) {
-    console.error("Error creating payment order:", error);
-    res.status(500).json({
-      message: "Failed to create payment order",
-      error: error.message,
-    });
+    res.json({ order, bookingId: booking._id });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to create order" });
   }
 });
 
-// POST /api/payments/verify
-// Verify Razorpay payment signature
-router.post("/verify", requireAuth, async (req, res) => {
+// Verify payment signature and mark booking as paid
+router.post("/verify", auth, async (req, res) => {
   try {
     const {
+      bookingId,
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      bookingId,
-    } = req.body;
-
+    } = req.body || {};
     if (
+      !bookingId ||
       !razorpay_order_id ||
       !razorpay_payment_id ||
-      !razorpay_signature ||
-      !bookingId
+      !razorpay_signature
     ) {
-      return res.status(400).json({ message: "Missing payment details" });
+      return res.status(400).json({ message: "Missing verification fields" });
     }
 
-    // Verify booking
     const booking = await Booking.findOne({
       _id: bookingId,
       userId: req.user.id,
     });
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (booking.paymentStatus === "paid") {
+      return res.json({ verified: true, message: "Already verified" });
     }
 
-    // Verify signature
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    if (booking.paymentOrderId !== razorpay_order_id) {
+      return res.status(400).json({ message: "Order ID mismatch" });
+    }
+
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "dummy_secret")
-      .update(body.toString())
+      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    const isAuthentic = expectedSignature === razorpay_signature;
-
-    if (isAuthentic) {
-      // Update booking with payment details
-      booking.razorpayPaymentId = razorpay_payment_id;
-      booking.razorpaySignature = razorpay_signature;
-      booking.paymentStatus = "paid";
-      await booking.save();
-
-      res.json({
-        success: true,
-        message: "Payment verified successfully",
-        booking,
-      });
-    } else {
-      // Mark payment as failed
-      booking.paymentStatus = "failed";
-      await booking.save();
-
-      res.status(400).json({
-        success: false,
-        message: "Payment verification failed",
-      });
+    const isValid = expectedSignature === razorpay_signature;
+    if (!isValid) {
+      return res
+        .status(400)
+        .json({ verified: false, message: "Invalid signature" });
     }
-  } catch (error) {
-    console.error("Error verifying payment:", error);
-    res.status(500).json({
-      message: "Failed to verify payment",
-      error: error.message,
+
+    booking.paymentStatus = "paid";
+    booking.paymentId = razorpay_payment_id;
+    booking.paymentSignature = razorpay_signature;
+    await booking.save();
+
+    res.json({
+      verified: true,
+      message: "Payment verified",
+      bookingId: booking._id,
     });
-  }
-});
-
-// POST /api/payments/webhook
-// Razorpay webhook for payment events (optional)
-router.post("/webhook", async (req, res) => {
-  try {
-    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
-
-    if (secret) {
-      const signature = req.headers["x-razorpay-signature"];
-      const body = JSON.stringify(req.body);
-
-      const expectedSignature = crypto
-        .createHmac("sha256", secret)
-        .update(body)
-        .digest("hex");
-
-      if (signature !== expectedSignature) {
-        return res.status(400).json({ message: "Invalid signature" });
-      }
-    }
-
-    const event = req.body.event;
-    const payload = req.body.payload.payment.entity;
-
-    console.log(`[Webhook] Received event: ${event}`);
-
-    if (event === "payment.captured") {
-      // Handle successful payment
-      const orderId = payload.order_id;
-      const booking = await Booking.findOne({ razorpayOrderId: orderId });
-
-      if (booking) {
-        booking.razorpayPaymentId = payload.id;
-        booking.paymentStatus = "paid";
-        await booking.save();
-        console.log(`[Webhook] Payment captured for booking ${booking._id}`);
-      }
-    } else if (event === "payment.failed") {
-      // Handle failed payment
-      const orderId = payload.order_id;
-      const booking = await Booking.findOne({ razorpayOrderId: orderId });
-
-      if (booking) {
-        booking.paymentStatus = "failed";
-        await booking.save();
-        console.log(`[Webhook] Payment failed for booking ${booking._id}`);
-      }
-    }
-
-    res.json({ status: "ok" });
-  } catch (error) {
-    console.error("[Webhook] Error:", error);
-    res.status(500).json({ message: "Webhook error" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: err.message || "Failed to verify payment" });
   }
 });
 

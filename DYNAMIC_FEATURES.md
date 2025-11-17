@@ -51,90 +51,33 @@ EZpark is now a fully dynamic parking management system with real-time data sync
 
 ### 4. **BookingModal Component** ✓
 
-- New modal component for streamlined booking flow with **Razorpay payment integration**
+- New modal component for streamlined booking flow
 - **Fields**:
   - Vehicle Type (car/bike/truck/van)
   - Vehicle Number (required)
   - Duration in hours (0.5 step)
 - Real-time price calculation
-- **Payment Gateway Integration**:
-  - Razorpay Checkout modal
-  - Secure payment verification (HMAC SHA256 signature)
-  - Payment status tracking (pending → paid)
-  - Auto-cancellation on payment failure
 - Form validation
 - Error handling
 - Glassmorphism design matching site theme
 
-### 5. **Automatic Slot Restoration** ✓
-
-- **Service**: `parkeasy-backend/services/bookingScheduler.js`
-  - Cron job runs every 5 minutes (`*/5 * * * *`)
-  - Automatically completes expired bookings
-  - Restores parking lot slots when booking time ends
-  - Updates `availableSlots` and `carsParked` counts
-- **Integration**: Starts automatically when server connects to MongoDB
-- **Behavior**:
-  - Finds all active bookings where `endTime <= current time`
-  - Updates status to "completed"
-  - Increments `availableSlots` and decrements `carsParked` for each lot
-
-### 6. **Payment Gateway Integration** ✓
-
-- **Provider**: Razorpay (Indian payment gateway)
-- **Routes**: `parkeasy-backend/routes/paymentRoutes.js`
-  - `POST /api/payments/create-order`: Creates Razorpay order before booking
-  - `POST /api/payments/verify`: Verifies payment signature after checkout
-  - `POST /api/payments/webhook`: Handles payment events (captured/failed)
-- **Security**:
-  - HMAC SHA256 signature verification
-  - Webhook secret validation
-  - Payment ID stored in booking for reference
-- **Payment Fields in Booking Model**:
-  - `razorpayOrderId`: Order ID from Razorpay
-  - `razorpayPaymentId`: Payment ID after successful payment
-  - `razorpaySignature`: Signature for verification
-  - `paymentStatus`: pending | paid | refunded | failed
-- **Frontend Flow**:
-  1. User fills booking form
-  2. Creates booking in MongoDB
-  3. Creates Razorpay order
-  4. Opens Razorpay Checkout modal
-  5. User completes payment
-  6. Verifies payment signature
-  7. Updates booking with payment details
-
-### 7. **Dynamic Data Flow**
+### 5. **Dynamic Data Flow**
 
 ```
 User Dashboard
     ↓ (creates booking)
 BookingModal → POST /api/bookings
-    ↓ (creates booking)
+    ↓ (updates)
 MongoDB Booking Collection
-    ↓ (creates payment order)
-POST /api/payments/create-order
-    ↓ (opens Razorpay modal)
-User completes payment
-    ↓ (verifies payment)
-POST /api/payments/verify
-    ↓ (updates paymentStatus to "paid")
-Booking updated in MongoDB
     ↓ (decrements availableSlots)
 ParkingLot Collection
     ↓ (reflects in)
 Owner Dashboard (real-time stats)
-    ↓ (time passes, booking expires)
-Booking Scheduler (runs every 5 minutes)
-    ↓ (auto-completes expired bookings)
-Status: active → completed
-    ↓ (restores availableSlots)
-ParkingLot Collection updated
     ↓ (user views)
 BookingHistory (with filters)
-    ↓ (can cancel before end time)
+    ↓ (can cancel)
 DELETE /api/bookings/:id
-    ↓ (restores slots immediately)
+    ↓ (restores)
 ParkingLot availableSlots
 ```
 
@@ -142,50 +85,28 @@ ParkingLot availableSlots
 
 ### Automatic Data Synchronization
 
-1. **Booking Creation with Payment**
+1. **Booking Creation**
 
-   - User fills booking form
-   - Booking created in MongoDB (status: "active", paymentStatus: "pending")
-   - Razorpay order created
-   - Payment modal displayed
-   - User completes payment
-   - Payment verified and booking updated (paymentStatus: "paid")
-   - availableSlots decremented
+   - User books slot → availableSlots decremented
    - carsParked incremented
    - Owner sees new booking immediately
 
-2. **Automatic Booking Completion**
-
-   - Scheduler runs every 5 minutes
-   - Finds bookings where endTime <= current time
-   - Updates status from "active" to "completed"
-   - Restores availableSlots
-   - Decrements carsParked
-   - No manual intervention required
-
-3. **Booking Cancellation**
+2. **Booking Cancellation**
 
    - User cancels → availableSlots restored
    - carsParked decremented
    - Status updated to "cancelled"
 
-4. **Cross-Page Updates**
+3. **Cross-Page Updates**
    - localStorage event listeners
    - Auto-refresh timers (15s for Dashboard, 30s for History)
    - Owner dashboard polls for new bookings
 
 ### Status Management
 
-- **Active**: Booking is currently in progress (payment completed)
-- **Completed**: End time has passed (auto-updated by scheduler)
-- **Cancelled**: User cancelled the booking before end time
-
-### Payment Status Management
-
-- **Pending**: Booking created, awaiting payment
-- **Paid**: Payment successful and verified
-- **Failed**: Payment failed or verification failed
-- **Refunded**: Payment refunded (future feature)
+- **Active**: Booking is currently in progress
+- **Completed**: End time has passed
+- **Cancelled**: User cancelled the booking
 
 ## 🎨 UI/UX Consistency
 
@@ -255,25 +176,7 @@ All new components follow the existing design system:
 - Access user management (routes ready)
 - System-wide statistics
 
-## 🚀 Next Steps (Implemented Features)
-
-### ✅ Automatic Slot Restoration (COMPLETED)
-
-- ✅ Booking scheduler service with cron job
-- ✅ Runs every 5 minutes
-- ✅ Auto-completes expired bookings
-- ✅ Restores parking lot availability
-
-### ✅ Payment Gateway Integration (COMPLETED)
-
-- ✅ Razorpay integration for Indian payments
-- ✅ Secure payment verification with HMAC SHA256
-- ✅ Payment status tracking in bookings
-- ✅ Razorpay Checkout modal in BookingModal
-- ✅ Webhook support for payment events
-- ⚠️ **Setup Required**: Add Razorpay keys to backend `.env` file
-
-### 🔜 Remaining Enhancements
+## 🚀 Next Steps (Partially Implemented)
 
 ### 1. Complete Dashboard Integration
 
@@ -305,204 +208,39 @@ All new components follow the existing design system:
 
 ### 5. Advanced Features
 
-- ✅ Payment integration (Razorpay)
+- [ ] Payment integration
 - [ ] Email notifications
 - [ ] SMS alerts for bookings
 - [ ] Review and rating system
 - [ ] Loyalty program
 
-## 🔧 Setup Instructions
-
-### 1. Install Dependencies
-
-**Backend:**
-
-```bash
-cd parkeasy-backend
-npm install
-# Packages include: express, mongoose, jsonwebtoken, razorpay, node-cron
-```
-
-**Frontend:**
-
-```bash
-cd parkeasy-frontend
-npm install
-# Includes: react, axios, react-router-dom, leaflet
-```
-
-### 2. Configure Environment Variables
-
-**Backend (.env):**
-
-```env
-PORT=8080
-MONGO_URI=mongodb+srv://your-connection-string
-JWT_SECRET=your-jwt-secret
-RAZORPAY_KEY_ID=rzp_test_your_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
-```
-
-**Get Razorpay Keys:**
-
-1. Sign up at https://razorpay.com/
-2. Go to Settings → API Keys
-3. Generate Test/Live API Keys
-4. Copy Key ID and Key Secret to `.env`
-5. For webhooks: Settings → Webhooks → Add webhook URL → Copy secret
-
-**Frontend (src/config.js):**
-
-```javascript
-export const API_BASE = "http://localhost:8080";
-```
-
-### 3. Seed Database (Optional)
-
-```bash
-cd parkeasy-backend
-node seed.js
-# Creates sample parking lots and users
-```
-
-### 4. Start Services
-
-**Backend:**
-
-```bash
-cd parkeasy-backend
-npm start
-# Server runs on http://localhost:8080
-# Booking scheduler starts automatically
-```
-
-**Frontend:**
-
-```bash
-cd parkeasy-frontend
-npm run dev
-# App runs on http://localhost:5173
-```
-
-### 5. Test Payment Flow
-
-**Using Razorpay Test Mode:**
-
-Test Card Details:
-
-- Card Number: `4111 1111 1111 1111`
-- Expiry: Any future date
-- CVV: Any 3 digits
-- Name: Any name
-
-Test UPI ID: `success@razorpay`
-
-Test Wallet: Select any wallet, use OTP `0000`
-
-**Note**: Razorpay test mode will show "Test Mode" banner in payment modal.
-
 ## 🧪 Testing the Dynamic Features
 
-### 1. Test Automatic Slot Restoration
-
-**Scenario**: Book a slot for 30 minutes, wait, see it auto-complete
-
-```bash
-# 1. Start backend (scheduler starts automatically)
-cd parkeasy-backend
-npm start
-
-# 2. Create a short-duration booking via frontend
-# - Duration: 0.5 hours (30 minutes)
-# - Complete payment
-
-# 3. Wait 35 minutes (scheduler runs every 5 minutes)
-
-# 4. Check booking status
-curl http://localhost:8080/api/bookings \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Expected: status changed from "active" to "completed"
-
-# 5. Check parking lot availability
-curl http://localhost:8080/api/parkinglots/LOT_ID
-
-# Expected: availableSlots increased by 1
-```
-
-### 2. Test Payment Gateway
-
-**Scenario**: Complete booking with Razorpay payment
-
-1. **Start Services**
-
-```bash
-# Terminal 1: Backend
-cd parkeasy-backend
-PORT=8080 node server.js
-
-# Terminal 2: Frontend
-cd parkeasy-frontend
-npm run dev
-```
-
-2. **Test Flow**
-
-   a. Register/Login as user
-   b. Browse parking lots on Dashboard
-   c. Click "Book Now" on any lot
-   d. Fill booking details:
-
-   - Vehicle Type: Car
-   - Vehicle Number: KA01AB1234
-   - Duration: 2 hours
-     e. Click "Book Slot"
-     f. Razorpay modal opens
-     g. Use test card: `4111 1111 1111 1111`
-     h. Complete payment
-     i. Booking confirmed
-
-3. **Verify Payment**
-
-```bash
-# Check booking has payment details
-curl http://localhost:8080/api/bookings/BOOKING_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Expected response includes:
-# "paymentStatus": "paid",
-# "razorpayOrderId": "order_xxx",
-# "razorpayPaymentId": "pay_xxx"
-```
-
-### 3. Test Complete User Flow
-
-**End-to-end test with all features**
+### 1. Start Backend
 
 ```bash
 cd parkeasy-backend
 PORT=8080 node server.js
 ```
 
-### 4. Start Frontend
+### 2. Start Frontend
 
 ```bash
 cd parkeasy-frontend
 npm run dev
 ```
 
-### 5. Test Complete Flow
+### 3. Test Flow
 
 1. Register as a user
 2. Browse parking lots on Dashboard
-3. Create a booking with payment
+3. Create a booking (use BookingModal when integrated)
 4. View booking in History page
 5. Filter by status (Active)
-6. Cancel the booking (refund feature pending)
+6. Cancel the booking
 7. See availability restored on Dashboard
 
-### 6. Test Owner Flow
+### 4. Test Owner Flow
 
 1. Register as owner
 2. Add a parking lot via Owner Register
@@ -515,25 +253,17 @@ npm run dev
 
 ### Backend
 
-- `models/Booking.js` - Enhanced with payment fields (razorpayOrderId, razorpayPaymentId, razorpaySignature, paymentStatus)
+- `models/Booking.js` - New MongoDB model
 - `services/bookingsService.js` - Complete rewrite with MongoDB
-- `services/bookingScheduler.js` - **NEW** - Automatic slot restoration with cron job
 - `routes/bookingsRoutes.js` - Enhanced with full CRUD operations
-- `routes/paymentRoutes.js` - **NEW** - Razorpay integration (create-order, verify, webhook)
 - `routes/parkingLotRoutes.js` - Fixed merge conflicts
-- `app.js` - Added payment routes registration
-- `server.js` - Integrated booking scheduler startup
-- `.env` - Added Razorpay configuration variables
-- `package.json` - Added dependencies: node-cron, razorpay
 
 ### Frontend
 
 - `pages/BookingHistory/BookingHistory.jsx` - Real API integration, filters
-- `pages/Dashboard/BookingModal.jsx` - Razorpay payment integration
+- `pages/Dashboard/BookingModal.jsx` - New booking component
 - `pages/Dashboard/BookingModal.css` - Styled booking modal
-- `pages/Dashboard/Dashboard.jsx` - Fixed geolocation with maximumAge: 0
-- `pages/OwnerDashboard/OwnerDashboard.jsx` - Fixed booking display with parkingLotId
-- `pages/OwnerDashboard/OwnerDashboard.css` - Status badge styling
+- `pages/OwnerDashboard/OwnerDashboard.jsx` - Ready for stats integration
 
 ## 🔗 API Endpoints Summary
 
@@ -548,12 +278,6 @@ npm run dev
 - `POST /api/bookings` - Create booking
 - `PATCH /api/bookings/:id/status` - Update status
 - `DELETE /api/bookings/:id` - Cancel booking
-
-### Payments (NEW)
-
-- `POST /api/payments/create-order` - Create Razorpay order for booking
-- `POST /api/payments/verify` - Verify payment signature after checkout
-- `POST /api/payments/webhook` - Handle Razorpay payment events
 
 ### Parking Lots
 
@@ -588,10 +312,7 @@ npm run dev
   pricePerHour: Number,
   totalPrice: Number,
   status: "active"|"completed"|"cancelled",
-  paymentStatus: "pending"|"paid"|"refunded"|"failed",
-  razorpayOrderId: String,
-  razorpayPaymentId: String,
-  razorpaySignature: String,
+  paymentStatus: "pending"|"paid"|"refunded",
   createdAt: Date,
   updatedAt: Date
 }
@@ -628,53 +349,20 @@ npm run dev
 8. ✅ Efficient database queries with indexes
 9. ✅ Proper error handling and validation
 10. ✅ Booking lifecycle management (create → active → complete/cancel)
-11. ✅ **Automatic slot restoration with time-based scheduler**
-12. ✅ **Razorpay payment gateway integration with secure verification**
-13. ✅ **Geolocation bug fixed** (maximumAge: 0 for fresh location)
-14. ✅ **Owner dashboard booking display fixed** (parkingLotId field name)
-
-## 🐛 Bug Fixes
-
-### Fixed: Owner Dashboard Not Showing Bookings
-
-**Issue**: Owner dashboard displayed 0 bookings despite bookings existing in database.
-
-**Root Cause**: Field name mismatch - MongoDB uses `parkingLotId` but code was checking `lotId`.
-
-**Solution**:
-
-- Updated `OwnerDashboard.jsx` to use `b.parkingLotId?._id || b.parkingLotId || b.lotId`
-- Added proper null checking for populated fields
-- Enhanced table to show customer name, vehicle details, status badges
-
-### Fixed: Geolocation Not Working
-
-**Issue**: "Use My Location" always used default Ahmedabad coordinates instead of actual user location.
-
-**Root Cause**: Browser cached old location data, timeout too short for some devices.
-
-**Solution**:
-
-- Added `maximumAge: 0` to force fresh location requests
-- Increased timeout to 10000ms (10 seconds)
-- Enhanced error handling with specific error codes
-- Better user feedback for permission denied/unavailable/timeout cases
 
 ## 🐛 Known Issues & Solutions
 
-## 🐛 Remaining Tasks
+### Issue: Old booking flow in Dashboard
 
-### Issue: Razorpay keys need configuration
+**Solution**: Integrate BookingModal component (partially done, needs wiring)
 
-**Solution**: Add real Razorpay API keys to backend `.env` file (currently has placeholder values)
+### Issue: Owner dashboard shows raw booking list
 
-### Issue: No refund implementation
+**Solution**: Add charts and statistics visualization using /api/bookings/owner-stats
 
-**Solution**: Add refund logic when users cancel bookings with paid status
+### Issue: No real-time notifications
 
-### Issue: No email notifications
-
-**Solution**: Can add WebSocket or Server-Sent Events for instant updates, or email service integration
+**Solution**: Can add WebSocket or Server-Sent Events for instant updates
 
 ## 📝 Environment Variables
 
@@ -684,9 +372,6 @@ npm run dev
 PORT=8080
 MONGO_URI=mongodb+srv://...
 JWT_SECRET=your-secret-here
-RAZORPAY_KEY_ID=rzp_test_your_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
 CORS_ORIGIN=http://localhost:5173
 ```
 
@@ -698,22 +383,6 @@ export const API_BASE = "http://localhost:8080";
 
 ## 🎉 Conclusion
 
-The site is now fully dynamic with persistent data storage, real-time synchronization, proper state management, **automatic slot restoration**, and **integrated payment gateway**. All pages interact with each other through the MongoDB database and API endpoints. The theme and design have been preserved throughout all new components.
+The site is now fully dynamic with persistent data storage, real-time synchronization, and proper state management. All pages interact with each other through the MongoDB database and API endpoints. The theme and design have been preserved throughout all new components.
 
-**Major Features Implemented**:
-
-- ✅ Time-based automatic booking completion (runs every 5 minutes)
-- ✅ Razorpay payment gateway with secure signature verification
-- ✅ Payment status tracking (pending → paid → refunded)
-- ✅ Geolocation accuracy improvements
-- ✅ Owner dashboard booking visibility fixed
-
-**Status**: Backend 100% functional, Frontend 100% functional with payment integration complete
-
-**Next Steps**:
-
-1. Add Razorpay API keys to `.env` file
-2. Test complete payment flow with real Razorpay test credentials
-3. Verify automatic slot restoration after booking expiry
-4. Implement refund logic for cancelled bookings (optional enhancement)
-5. Add email/SMS notifications (optional enhancement)
+**Status**: Backend 100% functional, Frontend 80% complete (Dashboard booking modal integration pending)

@@ -205,6 +205,36 @@ async function getOwnerStats(lotIds) {
   }
 }
 
+/**
+ * Finalize bookings that are past their endTime by marking them completed
+ * and replenishing parking lot availability.
+ */
+async function finalizeExpiredBookings() {
+  const now = new Date();
+  // Find active bookings that ended in the past
+  const expired = await Booking.find({
+    status: "active",
+    endTime: { $lte: now },
+  });
+  if (!expired.length) return { updated: 0 };
+  let updated = 0;
+  for (const b of expired) {
+    try {
+      // Mark completed
+      b.status = "completed";
+      await b.save();
+      // Replenish lot availability and decrement carsParked
+      await ParkingLot.findByIdAndUpdate(b.parkingLotId, {
+        $inc: { availableSlots: 1, carsParked: -1 },
+      });
+      updated += 1;
+    } catch (e) {
+      // continue processing other bookings
+    }
+  }
+  return { updated };
+}
+
 // Legacy function for compatibility (no longer needed but kept for safety)
 function addBooking(booking) {
   return createBooking(booking);
@@ -236,6 +266,7 @@ module.exports = {
   cancelBooking,
   getActiveBookingsForLot,
   getOwnerStats,
+  finalizeExpiredBookings,
   // Legacy exports
   addBooking,
   getBookingsForUser,

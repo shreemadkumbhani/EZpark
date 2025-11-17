@@ -64,24 +64,21 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "refunded", "failed"],
+      enum: ["pending", "paid", "refunded"],
       default: "pending",
+    },
+    // Optional payment gateway metadata
+    paymentProvider: {
+      type: String, // e.g., "razorpay"
+    },
+    paymentOrderId: {
+      type: String,
     },
     paymentId: {
       type: String,
-      default: null,
     },
-    razorpayOrderId: {
+    paymentSignature: {
       type: String,
-      default: null,
-    },
-    razorpayPaymentId: {
-      type: String,
-      default: null,
-    },
-    razorpaySignature: {
-      type: String,
-      default: null,
     },
   },
   {

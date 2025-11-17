@@ -1,6 +1,7 @@
 const app = require("./app");
 const mongoose = require("mongoose");
-const { startBookingScheduler } = require("./services/bookingScheduler");
+const cron = require("node-cron");
+const { finalizeExpiredBookings } = require("./services/bookingsService");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 8080; // respect .env or fallback to 8080
@@ -55,12 +56,25 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB");
-
-    // Start automatic booking scheduler
-    startBookingScheduler();
-
     app.listen(PORT, () =>
       console.log(`🚀 Server is running on http://localhost:${PORT}`)
     );
+
+    // Kick off a cron job to auto-complete expired bookings every minute
+    try {
+      cron.schedule("* * * * *", async () => {
+        try {
+          const { updated } = await finalizeExpiredBookings();
+          if (updated) {
+            // Optional: console log minimal info to avoid noise
+            // console.log(`⏱️ Finalized ${updated} expired bookings`);
+          }
+        } catch {}
+      });
+      // Also run once on startup
+      finalizeExpiredBookings().catch(() => {});
+    } catch (e) {
+      console.error("Failed to schedule finalizeExpiredBookings", e);
+    }
   })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
