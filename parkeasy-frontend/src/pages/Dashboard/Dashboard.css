@@ -65,6 +65,19 @@
   width: 100%;
 }
 
+/* Make search bar longer / more prominent on wider screens */
+@media (min-width: 1024px) {
+  .controls-row .search-wrap {
+    grid-column: span 2; /* occupy more horizontal space */
+  }
+}
+
+@media (min-width: 1280px) {
+  .controls-row .search-wrap {
+    max-width: 800px; /* cap width for ultra-wide displays */
+  }
+}
+
 /* Suggestions dropdown - Mobile optimized */
 .sug-list {
   background: rgba(15, 23, 42, 0.95);

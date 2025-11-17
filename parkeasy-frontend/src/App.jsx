@@ -11,6 +11,7 @@ import BookingHistory from "./pages/BookingHistory/BookingHistory";
 import Home from "./pages/Home/Home";
 import OwnerRegister from "./pages/OwnerRegister/OwnerRegister";
 import About from "./pages/About/About";
+import Payment from "./pages/Payment/Payment";
 import OwnerDashboard from "./pages/OwnerDashboard/OwnerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -75,6 +76,7 @@ function App() {
             }
           />
           <Route path="/about" element={<About />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       </Router>
     </AuthProvider>

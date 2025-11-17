@@ -83,6 +83,9 @@ export default function Navbar() {
         <li>
           <Link to="/about">About</Link>
         </li>
+        <li>
+          <Link to="/payment">Payment</Link>
+        </li>
         {/* Show Login/Register if not logged in */}
         {!isAuthed && (
           <>
@@ -151,6 +154,11 @@ export default function Navbar() {
               <li>
                 <Link to="/about" onClick={() => setMenuOpen(false)}>
                   About
+                </Link>
+              </li>
+              <li>
+                <Link to="/payment" onClick={() => setMenuOpen(false)}>
+                  Payment
                 </Link>
               </li>
               {!isAuthed && (
