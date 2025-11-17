@@ -248,14 +248,15 @@ export default function Dashboard() {
       }
     ).addTo(map);
 
-    // Add OpenStreetMap labels overlay for place names and roads
+    // Add custom styled labels overlay for place names and roads
     L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+      "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png",
       {
         attribution: "&copy; CartoDB",
         subdomains: "abcd",
         maxZoom: 19,
-        opacity: 0.9,
+        opacity: 1.0,
+        className: "map-labels-white-bold",
       }
     ).addTo(map);
 

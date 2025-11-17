@@ -169,3 +169,18 @@
   color: var(--success);
   font-weight: 600;
 }
+
+/* Map labels styling for better visibility on satellite imagery */
+.map-labels-white-bold {
+  filter: invert(1) contrast(1.5) brightness(1.2);
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000,
+    -2px -2px 0 #000,  
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000;
+  font-weight: bold !important;
+}
