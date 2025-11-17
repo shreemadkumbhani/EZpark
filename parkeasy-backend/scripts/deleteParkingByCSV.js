@@ -113,7 +113,9 @@ async function main() {
     return;
   }
 
-  console.log(`🗑️  Deleting ${toDeleteIds.size} parking lot(s) that match CSV...`);
+  console.log(
+    `🗑️  Deleting ${toDeleteIds.size} parking lot(s) that match CSV...`
+  );
   const res = await ParkingLot.deleteMany({ _id: { $in: [...toDeleteIds] } });
   deleted = res.deletedCount || 0;
 

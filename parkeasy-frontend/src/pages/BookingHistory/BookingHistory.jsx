@@ -234,10 +234,7 @@ export default function BookingHistory() {
       <div className="history-controls">
         <label>
           Filter:
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All</option>
             <option value="Upcoming">Upcoming</option>
             <option value="Active">Active</option>
@@ -246,18 +243,12 @@ export default function BookingHistory() {
         </label>
         <label>
           Sort:
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-          >
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="desc">Newest First</option>
             <option value="asc">Oldest First</option>
           </select>
         </label>
-        <button
-          onClick={fetchBookings}
-          className="receipt-btn"
-        >
+        <button onClick={fetchBookings} className="receipt-btn">
           Refresh
         </button>
       </div>
