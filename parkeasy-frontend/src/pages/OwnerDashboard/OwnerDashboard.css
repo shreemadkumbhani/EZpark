@@ -64,6 +64,25 @@
 .booking-table tbody tr:nth-child(odd) {
   background: #181818;
 }
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.status-active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+.status-completed {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
 .owner-add-link {
   display: inline-block;
   padding: 10px 14px;

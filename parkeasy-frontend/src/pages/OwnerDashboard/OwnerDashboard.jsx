@@ -33,9 +33,9 @@ export default function OwnerDashboard() {
     if (role === "owner" || role === "admin") load();
   }, [role]);
 
-  // Group bookings by lotId
+  // Group bookings by parkingLotId (MongoDB field)
   const grouped = bookings.reduce((acc, b) => {
-    const k = b.lotId || "unknown";
+    const k = b.parkingLotId?._id || b.parkingLotId || b.lotId || "unknown";
     if (!acc[k]) acc[k] = [];
     acc[k].push(b);
     return acc;
@@ -81,8 +81,8 @@ export default function OwnerDashboard() {
                   <table className="booking-table">
                     <thead>
                       <tr>
-                        <th>Booking ID</th>
-                        <th>Slot</th>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
                         <th>Status</th>
                         <th>Start</th>
                         <th>End</th>
@@ -91,13 +91,13 @@ export default function OwnerDashboard() {
                     </thead>
                     <tbody>
                       {list.map((b) => (
-                        <tr key={b.id}>
-                          <td>{b.id}</td>
-                          <td>{b.slot}</td>
-                          <td>{b.status}</td>
+                        <tr key={b._id || b.id}>
+                          <td>{b.userName || b.userId?.name || "N/A"}</td>
+                          <td>{b.vehicleNumber || b.vehicle || "N/A"} ({b.vehicleType || "N/A"})</td>
+                          <td><span className={`status-badge status-${b.status}`}>{b.status}</span></td>
                           <td>{new Date(b.startTime).toLocaleString()}</td>
                           <td>{new Date(b.endTime).toLocaleString()}</td>
-                          <td>₹{b.price}</td>
+                          <td>₹{b.totalPrice || b.price || 0}</td>
                         </tr>
                       ))}
                     </tbody>

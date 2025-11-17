@@ -186,19 +186,34 @@ export default function Dashboard() {
     }
 
     setLoading(true);
+    setError("");
+    setNotice("Requesting your location...");
+    
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
         const coords = { latitude, longitude };
+        setNotice("Location acquired! Loading nearby parking lots...");
         fetchParkingLots(coords);
+        
+        // Center map on user location
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([latitude, longitude], 14);
+        }
       },
-      () => {
-        setNotice(
-          "Using default location (Ahmedabad) due to location access being denied."
-        );
+      (error) => {
+        let errorMsg = "Location access denied. ";
+        if (error.code === 1) {
+          errorMsg = "Location permission denied. Please enable location access in your browser settings. ";
+        } else if (error.code === 2) {
+          errorMsg = "Location unavailable. ";
+        } else if (error.code === 3) {
+          errorMsg = "Location request timeout. ";
+        }
+        setNotice(errorMsg + "Using default location (Ahmedabad).");
         fetchParkingLots(DEFAULT_COORDS);
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }, [fetchParkingLots]);
 
@@ -503,6 +518,8 @@ export default function Dashboard() {
   );
 
   function useMyLocation() {
+    setNotice("");
+    setError("");
     askLocationAndLoad();
   }
 
@@ -511,6 +528,9 @@ export default function Dashboard() {
     setError("");
     setNotice("Using default location (Ahmedabad) for demo data.");
     fetchParkingLots(DEFAULT_COORDS);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([DEFAULT_COORDS.latitude, DEFAULT_COORDS.longitude], 14);
+    }
   }
 
   // Lock body scroll and optionally blur background when popup is open
