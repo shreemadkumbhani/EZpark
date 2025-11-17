@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE } from "../../config";
+import { useAuth } from "../../context/AuthContext";
 import "./BookingModal.css";
 
 export default function BookingModal({ lot, onClose, onSuccess }) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     vehicleType: "car",
     vehicleNumber: "",
@@ -33,11 +35,18 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
 
       const bookingData = {
         parkingLotId: lot._id,
+        parkingLotName: lot.name,
         vehicleType: formData.vehicleType,
         vehicleNumber: formData.vehicleNumber.trim().toUpperCase(),
         startTime: now.toISOString(),
         endTime: endTime.toISOString(),
         duration,
+        pricePerHour: lot.pricePerHour,
+        totalPrice,
+        userName: user?.name || "",
+        userEmail: user?.email || "",
+        userPhone: user?.phone || "",
+        status: now < new Date(startTime) ? "upcoming" : "active",
       };
 
       const res = await axios.post(`${API_BASE}/api/bookings`, bookingData, {
