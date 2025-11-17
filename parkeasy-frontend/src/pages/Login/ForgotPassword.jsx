@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../../config";
 import "./Login.css";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -18,20 +20,26 @@ export default function ForgotPassword() {
       const res = await axios.post(`${API_BASE}/api/auth/forgot-password`, {
         email,
       });
-      const baseMsg =
-        res.data?.message ||
-        "If that email exists, a reset link has been sent.";
+      
+      // Extract token and redirect user to reset password page
       if (res.data?.resetUrl) {
         try {
           const token = new URL(res.data.resetUrl).searchParams.get("token");
-          const localUrl = `${window.location.origin}/reset-password?token=${token}`;
-          setMessage(`${baseMsg}\n${localUrl}`);
-        } catch {
-          setMessage(`${baseMsg}\n${res.data.resetUrl}`);
+          if (token) {
+            // Redirect directly to reset password page with token
+            navigate(`/reset-password?token=${token}`);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to parse reset URL:", err);
         }
-      } else {
-        setMessage(baseMsg);
       }
+      
+      // Fallback: show success message if redirect fails
+      setMessage(
+        res.data?.message ||
+        "If that email exists, check your inbox for reset instructions."
+      );
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Something went wrong"
