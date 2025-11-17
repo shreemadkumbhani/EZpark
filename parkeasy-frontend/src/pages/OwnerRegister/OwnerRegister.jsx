@@ -186,6 +186,26 @@ export default function OwnerRegister() {
         }
       ).addTo(map);
 
+      // Add labels overlay for place names, roads, and area labels
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution: "",
+          maxZoom: 19,
+          opacity: 0.8,
+        }
+      ).addTo(map);
+
+      // Add transportation labels (roads, highways, etc.)
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution: "",
+          maxZoom: 19,
+          opacity: 0.7,
+        }
+      ).addTo(map);
+
       // Build a drop pin icon (SVG, bundler-safe)
       const pinSvg =
         '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">' +
