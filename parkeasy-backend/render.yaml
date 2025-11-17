@@ -1,9 +1,11 @@
 services:
   - type: web
     name: parkeasy-backend
-    env: docker
+    env: node
     plan: free
     region: oregon
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: MONGO_URI
         sync: false

@@ -1,10 +1,12 @@
 services:
   - type: web
     name: ezpark-backend
-    env: docker
+    env: node
     plan: free
     region: oregon
     rootDir: parkeasy-backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: MONGO_URI
         sync: false
