@@ -248,23 +248,14 @@ export default function Dashboard() {
       }
     ).addTo(map);
 
-    // Add labels overlay for place names, roads, and area labels
+    // Add OpenStreetMap labels overlay for place names and roads
     L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
       {
-        attribution: "",
+        attribution: "&copy; CartoDB",
+        subdomains: "abcd",
         maxZoom: 19,
-        opacity: 0.8,
-      }
-    ).addTo(map);
-
-    // Add transportation labels (roads, highways, etc.)
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
-      {
-        attribution: "",
-        maxZoom: 19,
-        opacity: 0.7,
+        opacity: 0.9,
       }
     ).addTo(map);
 
