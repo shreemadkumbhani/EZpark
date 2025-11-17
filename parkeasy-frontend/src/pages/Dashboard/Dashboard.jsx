@@ -115,10 +115,13 @@ export default function Dashboard() {
 
   // Helpers (used by effects/UI below)
   function getOccupancyRatio(lot) {
+    if (!lot || typeof lot.availableSlots === "undefined") {
+      return 0; // Default value if lot or availableSlots is undefined
+    }
     const t = Number(lot.totalSlots) || 1;
     const a = Math.max(0, Number(lot.availableSlots) || 0);
     const used = Math.max(0, t - a);
-    return Math.max(0, Math.min(1, used / t));
+    return used / t;
   }
   const barClassForRatio = useCallback(function barClassForRatio(r) {
     if (r === 0) return "bar-green";
@@ -403,10 +406,11 @@ export default function Dashboard() {
       const marker = L.marker([lat, lng], {
         icon: parkingIconRef.current || undefined,
       }).addTo(layer);
+      // Update marker popup logic
       marker.bindPopup(
         `<strong>${escapeHtml(lot.name || "Unnamed")}</strong><br/>` +
           `${formatDistance(lot.distance || 0)} • ` +
-          `${lot.availableSlots}/${lot.totalSlots} slots`
+          `${lot?.availableSlots || 0}/${lot?.totalSlots || 0} slots`
       );
       marker.on("click", () => setSelectedLot(lot));
       markers.push(marker);
