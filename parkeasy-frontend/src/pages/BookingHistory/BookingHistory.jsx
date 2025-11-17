@@ -38,6 +38,18 @@ function getMapsLink(booking) {
   return null;
 }
 
+// Helper to get destination coordinates object
+function getDestinationCoords(booking) {
+  if (booking.parkingLotId?.location?.coordinates) {
+    const [lng, lat] = booking.parkingLotId.location.coordinates;
+    return { lat, lng };
+  }
+  if (booking.latitude && booking.longitude) {
+    return { lat: Number(booking.latitude), lng: Number(booking.longitude) };
+  }
+  return null;
+}
+
 // Helper to generate a QR code with booking details
 function getQRCodeUrl(booking) {
   const lotName =
@@ -136,6 +148,31 @@ export default function BookingHistory() {
     }
   }
 
+  // Open driving directions in Google Maps to the lot
+  function openDirections(booking) {
+    const dest = getDestinationCoords(booking);
+    if (!dest) return;
+    const openWith = (url) => window.open(url, "_blank", "noopener,noreferrer");
+    // Try precise origin; gracefully fall back to destination-only
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const url = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${dest.lat},${dest.lng}&travelmode=driving`;
+          openWith(url);
+        },
+        () => {
+          const url = `https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lng}&travelmode=driving`;
+          openWith(url);
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 60000 }
+      );
+    } else {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lng}&travelmode=driving`;
+      openWith(url);
+    }
+  }
+
   // Add or update review (calls backend and refreshes)
   async function handleReviewById(bookingId, value) {
     if (!bookingId) return;
@@ -194,15 +231,12 @@ export default function BookingHistory() {
           <span style={{ fontSize: 14, color: "#666" }}>(Updating...)</span>
         )}
       </h2>
-      <div
-        style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}
-      >
+      <div className="history-controls">
         <label>
           Filter:
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            style={{ marginLeft: 8 }}
           >
             <option value="all">All</option>
             <option value="Upcoming">Upcoming</option>
@@ -215,7 +249,6 @@ export default function BookingHistory() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            style={{ marginLeft: 8 }}
           >
             <option value="desc">Newest First</option>
             <option value="asc">Oldest First</option>
@@ -223,14 +256,7 @@ export default function BookingHistory() {
         </label>
         <button
           onClick={fetchBookings}
-          style={{
-            padding: "4px 8px",
-            borderRadius: 4,
-            backgroundColor: "#3b82f6",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="receipt-btn"
         >
           Refresh
         </button>
@@ -371,6 +397,15 @@ export default function BookingHistory() {
                 >
                   Download Receipt
                 </button>
+                {getDestinationCoords(booking) && (
+                  <button
+                    className="directions-btn"
+                    onClick={() => openDirections(booking)}
+                    title="Open directions in Google Maps"
+                  >
+                    Directions
+                  </button>
+                )}
                 {(status === "Upcoming" || status === "Active") && (
                   <button
                     className="cancel-btn"

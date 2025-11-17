@@ -166,7 +166,8 @@
 
 .history-item .receipt-btn,
 .history-item .cancel-btn,
-.history-item .review-btn {
+.history-item .review-btn,
+.history-item .directions-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -261,6 +262,17 @@
 
 .receipt-btn:hover {
   box-shadow: var(--shadow-md), var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.directions-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.directions-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
 }
 
