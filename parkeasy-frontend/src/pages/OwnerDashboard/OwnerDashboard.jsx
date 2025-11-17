@@ -99,6 +99,7 @@ export default function OwnerDashboard() {
                   <h4>
                     {lot?.name || "Unknown Lot"} ({list.length})
                   </h4>
+                  {/* Desktop table view */}
                   <table className="booking-table">
                     <thead>
                       <tr>
@@ -130,6 +131,50 @@ export default function OwnerDashboard() {
                       ))}
                     </tbody>
                   </table>
+                  {/* Mobile card view */}
+                  <div className="booking-cards">
+                    {list.map((b) => (
+                      <div key={b._id || b.id} className="booking-card">
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">Customer</span>
+                          <span className="booking-card-value">
+                            {b.userName || b.userId?.name || "N/A"}
+                          </span>
+                        </div>
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">Vehicle</span>
+                          <span className="booking-card-value">
+                            {b.vehicleNumber || b.vehicle || "N/A"} (
+                            {b.vehicleType || "N/A"})
+                          </span>
+                        </div>
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">Status</span>
+                          <span className={`status-badge status-${b.status}`}>
+                            {b.status}
+                          </span>
+                        </div>
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">Start</span>
+                          <span className="booking-card-value">
+                            {new Date(b.startTime).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">End</span>
+                          <span className="booking-card-value">
+                            {new Date(b.endTime).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="booking-card-row">
+                          <span className="booking-card-label">Price</span>
+                          <span className="booking-card-value">
+                            ₹{b.totalPrice || b.price || 0}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })}

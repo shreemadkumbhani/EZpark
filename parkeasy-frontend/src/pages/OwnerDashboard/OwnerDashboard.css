@@ -1,96 +1,233 @@
+/* OwnerDashboard - Mobile First, Fully Responsive */
 .owner-dash-wrap {
-  padding: 24px;
-  max-width: 1100px;
+  padding: var(--spacing-md);
+  max-width: 1200px;
   margin: 0 auto;
 }
-.owner-dash-title {
-  font-size: 2rem;
-  margin-bottom: 12px;
+
+@media (min-width: 640px) {
+  .owner-dash-wrap {
+    padding: var(--spacing-xl);
+  }
 }
+
+.owner-dash-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .owner-dash-content {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: var(--spacing-2xl);
 }
+
+/* Parking Lots Section */
 .owner-lots .lots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
 }
+
+@media (min-width: 640px) {
+  .owner-lots .lots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .owner-lots .lots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
 .lot-card {
-  background: #111;
-  border: 1px solid #222;
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
 }
+
+.lot-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .lot-name {
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
 }
+
 .lot-slots {
-  font-size: 0.85rem;
-  color: #10b981;
+  font-size: 0.9375rem;
+  color: var(--success);
+  font-weight: 600;
 }
+
 .lot-address {
-  font-size: 0.75rem;
-  color: #888;
-  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-sm);
+  line-height: 1.5;
 }
+/* Bookings Section */
 .booking-group {
-  margin-top: 16px;
+  margin-top: var(--spacing-xl);
 }
+
 .booking-group h4 {
-  margin: 8px 0;
-  font-size: 1.05rem;
+  margin: var(--spacing-md) 0;
+  font-size: clamp(1rem, 3vw, 1.125rem);
+  font-weight: 700;
+  color: var(--text-primary);
 }
+
+/* Card-based view for mobile, table for desktop */
 .booking-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  display: none;
 }
+
+@media (min-width: 768px) {
+  .booking-table {
+    display: table;
+  }
+}
+
 .booking-table th,
 .booking-table td {
-  border: 1px solid #222;
-  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-md);
   text-align: left;
 }
+
 .booking-table th {
-  background: #1e293b;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.9375rem;
 }
-.booking-table tbody tr:nth-child(even) {
-  background: #121212;
+
+.booking-table tbody tr {
+  background: rgba(255, 255, 255, 0.02);
+  transition: all var(--transition-fast);
 }
-.booking-table tbody tr:nth-child(odd) {
-  background: #181818;
+
+.booking-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+
+/* Mobile card view for bookings */
+.booking-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .booking-cards {
+    display: none;
+  }
+}
+
+.booking-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.booking-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.booking-card-row:last-child {
+  border-bottom: none;
+}
+
+.booking-card-label {
   font-weight: 600;
-  text-transform: capitalize;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
+
+.booking-card-value {
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.status-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
 .status-active {
   background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  color: var(--success);
+  border: 1px solid var(--success);
 }
+
 .status-completed {
   background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  color: var(--primary-light);
+  border: 1px solid var(--primary);
 }
+
 .status-cancelled {
   background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  color: var(--error);
+  border: 1px solid var(--error);
 }
+
 .owner-add-link {
-  display: inline-block;
-  padding: 10px 14px;
-  background: #2563eb;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  min-height: 48px;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
 }
+
 .owner-add-link:hover {
-  background: #1d4ed8;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transform: translateY(-2px);
 }
