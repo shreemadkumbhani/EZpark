@@ -10,18 +10,24 @@ async function createBooking(bookingData) {
     // Defensive normalization so callers can pass minimal data
     const data = { ...bookingData };
 
-// Normalize status to lowercase and default to active
-if (data.status) {
-  data.status = String(data.status).toLowerCase();
-}
-const validStatuses = ["active", "completed", "cancelled", "expired", "upcoming"];
-if (!data.status || !validStatuses.includes(data.status)) {
-  data.status = "active";
-}
-// Map upcoming to active
-if (data.status === "upcoming") {
-  data.status = "active";
-}    // Ensure we have a lot and hydrate related fields
+    // Normalize status to lowercase and default to active
+    if (data.status) {
+      data.status = String(data.status).toLowerCase();
+    }
+    const validStatuses = [
+      "active",
+      "completed",
+      "cancelled",
+      "expired",
+      "upcoming",
+    ];
+    if (!data.status || !validStatuses.includes(data.status)) {
+      data.status = "active";
+    }
+    // Map upcoming to active
+    if (data.status === "upcoming") {
+      data.status = "active";
+    } // Ensure we have a lot and hydrate related fields
     let lot = null;
     if (data.parkingLotId) {
       lot = await ParkingLot.findById(data.parkingLotId);
