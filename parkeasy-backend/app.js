@@ -17,9 +17,6 @@ app.use("/api/parkinglots", parkingLotRoutes);
 const bookingsRoutes = require("./routes/bookingsRoutes");
 app.use("/api/bookings", bookingsRoutes);
 
-const paymentRoutes = require("./routes/paymentRoutes");
-app.use("/api/payments", paymentRoutes);
-
 app.get("/", (req, res) => {
   res.send("🎉 ParkEasy API is running!");
 });

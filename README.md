@@ -64,7 +64,6 @@ If you want, I can attempt to create the commit and push for you now (requires y
 - **Backend:** Node.js, Express.js  
 - **Authentication:** Firebase Auth  
 - **Database:** MongoDB (Atlas)  
-- **Payments:** Razorpay  
 - **Geolocation & Maps:** HTML Geolocation API, Map API integration
 
 ---
@@ -75,7 +74,6 @@ If you want, I can attempt to create the commit and push for you now (requires y
 - 📍 Live Location Detection  
 - 🅿️ Nearby Parking Slot Suggestion  
 - 🎟️ Advance Parking Slot Booking  
-- 💳 Online Payment Integration  
 - 📅 Date & Time-Based Slot Reservation  
 - 🗺️ Admin Dashboard for Lot Management  
 - 📈 Total Working Hours for Attendants  
