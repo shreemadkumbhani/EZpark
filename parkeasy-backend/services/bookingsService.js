@@ -7,11 +7,71 @@ const ParkingLot = require("../models/ParkingLot");
  */
 async function createBooking(bookingData) {
   try {
-    const booking = new Booking(bookingData);
+    // Defensive normalization so callers can pass minimal data
+    const data = { ...bookingData };
+
+    // Normalize status to lowercase and default to active
+    if (data.status) {
+      data.status = String(data.status).toLowerCase();
+    }
+    const validStatuses = ["active", "completed", "cancelled", "expired"];
+    if (!data.status || !validStatuses.includes(data.status)) {
+      data.status = "active";
+    }
+
+    // Ensure we have a lot and hydrate related fields
+    let lot = null;
+    if (data.parkingLotId) {
+      lot = await ParkingLot.findById(data.parkingLotId);
+    }
+    if (!lot) {
+      throw new Error("Parking lot not found");
+    }
+    if (!data.parkingLotName) data.parkingLotName = lot.name;
+
+    // Ensure user metadata is present if userId provided
+    if ((!data.userName || !data.userEmail || !data.userPhone) && data.userId) {
+      try {
+        const User = require("../models/User");
+        const user = await User.findById(data.userId);
+        if (user) {
+          data.userName = data.userName || user.name || "Unknown";
+          data.userEmail = data.userEmail || user.email || "";
+          data.userPhone = data.userPhone || user.phone || "";
+        }
+      } catch {}
+    }
+
+    // Timing & pricing
+    const now = new Date();
+    if (!data.startTime) data.startTime = now;
+    if (!data.duration && data.startTime && data.endTime) {
+      const start = new Date(data.startTime);
+      const end = new Date(data.endTime);
+      data.duration = Math.max(
+        0.5,
+        Math.ceil((end - start) / (1000 * 60 * 60))
+      );
+    }
+    if (!data.duration) data.duration = 1;
+    if (!data.endTime) {
+      data.endTime = new Date(
+        new Date(data.startTime).getTime() + data.duration * 3600000
+      );
+    }
+
+    if (data.pricePerHour == null) {
+      data.pricePerHour = lot.pricePerHour || 50;
+    }
+    if (data.totalPrice == null) {
+      data.totalPrice = Number(data.pricePerHour) * Number(data.duration);
+    }
+
+    const booking = new Booking(data);
     await booking.save();
 
     // Update parking lot availability
-    await ParkingLot.findByIdAndUpdate(bookingData.parkingLotId, {
+    await ParkingLot.findByIdAndUpdate(data.parkingLotId, {
       $inc: { availableSlots: -1, carsParked: 1 },
     });
 

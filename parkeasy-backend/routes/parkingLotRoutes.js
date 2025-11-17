@@ -111,7 +111,7 @@ module.exports = router;
 
 // POST /api/parkinglots/:id/book
 // Book a slot at a parking lot (decrements availableSlots, increments carsParked) and record booking
-router.post(":id/book", requireAuth, async (req, res) => {
+router.post("/:id/book", requireAuth, async (req, res) => {
   const { id } = req.params;
   const { hour, vehicleType = "car", vehicleNumber = "UNKNOWN" } = req.body;
   const duration = parseFloat(hour || req.body.duration) || 1;
