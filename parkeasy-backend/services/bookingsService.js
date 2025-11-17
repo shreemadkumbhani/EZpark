@@ -203,10 +203,12 @@ async function updateBookingStatus(bookingId, status, userId = null) {
     if (lotId) {
       // Transition releasing a slot (active -> terminal state)
       const releases =
-        prevStatus === "active" && ["completed", "cancelled", "expired"].includes(nextStatus);
+        prevStatus === "active" &&
+        ["completed", "cancelled", "expired"].includes(nextStatus);
       // Transition occupying a slot (reactivating)
       const occupies =
-        nextStatus === "active" && ["completed", "cancelled", "expired"].includes(prevStatus);
+        nextStatus === "active" &&
+        ["completed", "cancelled", "expired"].includes(prevStatus);
 
       if (releases) {
         lotUpdate = { $inc: { availableSlots: 1, carsParked: -1 } };
@@ -221,7 +223,10 @@ async function updateBookingStatus(bookingId, status, userId = null) {
       try {
         await ParkingLot.findByIdAndUpdate(lotId, lotUpdate);
       } catch (e) {
-        console.error("Lot counter update failed during status change", e.message);
+        console.error(
+          "Lot counter update failed during status change",
+          e.message
+        );
       }
     }
     return booking;
