@@ -46,9 +46,15 @@
 .navbar-links {
   list-style: none;
   display: none;
+  align-items: center;
   gap: var(--spacing-lg);
   margin: 0;
   padding: 0;
+}
+
+.navbar-links li {
+  display: flex;
+  align-items: center;
 }
 
 .navbar-links.desktop {
@@ -70,6 +76,11 @@
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: auto;
+  line-height: normal;
 }
 
 .navbar-links a:hover {
@@ -82,6 +93,7 @@
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: var(--text-primary);
+  font-family: inherit;
   font-weight: 600;
   font-size: 0.9375rem;
   padding: var(--spacing-sm) var(--spacing-md);
@@ -89,6 +101,11 @@
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: auto;
+  line-height: normal;
 }
 
 .logout-btn:hover {
