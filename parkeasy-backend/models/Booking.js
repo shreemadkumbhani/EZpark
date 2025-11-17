@@ -17,7 +17,7 @@ const bookingSchema = new mongoose.Schema(
     },
     userPhone: {
       type: String,
-      required: true,
+      required: false,
     },
     parkingLotId: {
       type: mongoose.Schema.Types.ObjectId,
