@@ -1,7 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config";
 import "./BookingModal.css";
+
+// Load Razorpay script
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export default function BookingModal({ lot, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -11,12 +22,22 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
+  useEffect(() => {
+    loadRazorpayScript().then(setScriptLoaded);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.vehicleNumber.trim()) {
       setError("Please enter vehicle number");
+      return;
+    }
+
+    if (!scriptLoaded) {
+      setError("Payment gateway not loaded. Please refresh and try again.");
       return;
     }
 
@@ -38,18 +59,81 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
         duration,
       };
 
-      await axios.post(`${API_BASE}/api/bookings`, bookingData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Create booking first
+      const bookingRes = await axios.post(
+        `${API_BASE}/api/bookings`,
+        bookingData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      // Notify success
-      if (onSuccess) onSuccess();
-      onClose();
+      const booking = bookingRes.data.booking;
+      const totalPrice = booking.totalPrice;
+
+      // Create Razorpay order
+      const orderRes = await axios.post(
+        `${API_BASE}/api/payments/create-order`,
+        { bookingId: booking._id, amount: totalPrice },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const { orderId, key } = orderRes.data;
+
+      // Open Razorpay payment modal
+      const options = {
+        key: key,
+        amount: totalPrice * 100,
+        currency: "INR",
+        name: "ParkEasy",
+        description: `Booking for ${lot.name}`,
+        order_id: orderId,
+        handler: async function (response) {
+          try {
+            // Verify payment
+            await axios.post(
+              `${API_BASE}/api/payments/verify`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingId: booking._id,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Payment successful
+            if (onSuccess) onSuccess();
+            onClose();
+          } catch (verifyErr) {
+            setError(
+              verifyErr.response?.data?.message || "Payment verification failed"
+            );
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: booking.userName,
+          email: booking.userEmail,
+          contact: booking.userPhone,
+        },
+        theme: {
+          color: "#3b82f6",
+        },
+        modal: {
+          ondismiss: function () {
+            setError("Payment cancelled");
+            setLoading(false);
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Failed to create booking"
       );
-    } finally {
       setLoading(false);
     }
   };

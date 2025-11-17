@@ -1,14 +1,10 @@
 services:
   - type: web
     name: parkeasy-backend
-    env: node
+    env: docker
     plan: free
     region: oregon
-    buildCommand: npm install
-    startCommand: node server.js
     envVars:
-      - key: NODE_VERSION
-        value: 20
       - key: MONGO_URI
         sync: false
       - key: JWT_SECRET

@@ -93,8 +93,15 @@ export default function OwnerDashboard() {
                       {list.map((b) => (
                         <tr key={b._id || b.id}>
                           <td>{b.userName || b.userId?.name || "N/A"}</td>
-                          <td>{b.vehicleNumber || b.vehicle || "N/A"} ({b.vehicleType || "N/A"})</td>
-                          <td><span className={`status-badge status-${b.status}`}>{b.status}</span></td>
+                          <td>
+                            {b.vehicleNumber || b.vehicle || "N/A"} (
+                            {b.vehicleType || "N/A"})
+                          </td>
+                          <td>
+                            <span className={`status-badge status-${b.status}`}>
+                              {b.status}
+                            </span>
+                          </td>
                           <td>{new Date(b.startTime).toLocaleString()}</td>
                           <td>{new Date(b.endTime).toLocaleString()}</td>
                           <td>₹{b.totalPrice || b.price || 0}</td>

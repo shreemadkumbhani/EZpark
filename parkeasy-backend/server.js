@@ -1,5 +1,6 @@
 const app = require("./app");
 const mongoose = require("mongoose");
+const { startBookingScheduler } = require("./services/bookingScheduler");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 8080; // respect .env or fallback to 8080
@@ -54,6 +55,10 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB");
+
+    // Start automatic booking scheduler
+    startBookingScheduler();
+
     app.listen(PORT, () =>
       console.log(`🚀 Server is running on http://localhost:${PORT}`)
     );
