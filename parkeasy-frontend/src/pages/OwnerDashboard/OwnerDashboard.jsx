@@ -33,6 +33,27 @@ export default function OwnerDashboard() {
     if (role === "owner" || role === "admin") load();
   }, [role]);
 
+  // Auto-refresh every 30 seconds for real-time updates
+  useEffect(() => {
+    async function refresh() {
+      if (role !== "owner" && role !== "admin") return;
+      try {
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const [lotsRes, bookingsRes] = await Promise.all([
+          axios.get(`${API_BASE}/api/parkinglots/owner`, { headers }),
+          axios.get(`${API_BASE}/api/bookings/owner-lots`, { headers }),
+        ]);
+        setLots(lotsRes.data?.parkingLots || []);
+        setBookings(bookingsRes.data?.bookings || []);
+      } catch (err) {
+        console.error("Failed to refresh owner data", err);
+      }
+    }
+    const interval = setInterval(refresh, 30000);
+    return () => clearInterval(interval);
+  }, [role]);
+
   // Group bookings by parkingLotId (MongoDB field)
   const grouped = bookings.reduce((acc, b) => {
     const k = b.parkingLotId?._id || b.parkingLotId || b.lotId || "unknown";

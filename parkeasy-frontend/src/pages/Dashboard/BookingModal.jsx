@@ -42,6 +42,11 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // Set flag for cross-tab updates
+      try {
+        localStorage.setItem("bookings:refresh", "1");
+      } catch {}
+
       // Notify success
       if (onSuccess) onSuccess();
       onClose();

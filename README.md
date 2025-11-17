@@ -52,6 +52,7 @@ git push origin main
 ```
 
 If you want, I can attempt to create the commit and push for you now (requires your git credentials to be available in the environment).
+
 # 🚗 EZpark
 
 **EZpark** is a full-stack smart parking solution built with **React** and **Node.js**, designed to make parking management seamless in malls, public spaces, and commercial areas.
@@ -60,23 +61,23 @@ If you want, I can attempt to create the commit and push for you now (requires y
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React, Tailwind CSS  
-- **Backend:** Node.js, Express.js  
-- **Authentication:** Firebase Auth  
-- **Database:** MongoDB (Atlas)  
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Node.js, Express.js
+- **Authentication:** Firebase Auth
+- **Database:** MongoDB (Atlas)
 - **Geolocation & Maps:** HTML Geolocation API, Map API integration
 
 ---
 
 ## 📦 Features
 
-- 🔐 User Registration & Login (JWT Authentication)  
-- 📍 Live Location Detection  
-- 🅿️ Nearby Parking Slot Suggestion  
-- 🎟️ Advance Parking Slot Booking  
-- 📅 Date & Time-Based Slot Reservation  
-- 🗺️ Admin Dashboard for Lot Management  
-- 📈 Total Working Hours for Attendants  
+- 🔐 User Registration & Login (JWT Authentication)
+- 📍 Live Location Detection
+- 🅿️ Nearby Parking Slot Suggestion
+- 🎟️ Advance Parking Slot Booking
+- 📅 Date & Time-Based Slot Reservation
+- 🗺️ Admin Dashboard for Lot Management
+- 📈 Total Working Hours for Attendants
 - 📜 Terms & Conditions on Booking
 
 ---
@@ -135,9 +136,9 @@ EZpark/
 
 ## 🧪 Future Enhancements
 
-- Push Notifications on Slot Status  
-- QR Code-Based Check-in/Checkout  
-- Admin Analytics Dashboard  
+- Push Notifications on Slot Status
+- QR Code-Based Check-in/Checkout
+- Admin Analytics Dashboard
 - Vehicle License Plate Recognition
 
 ---
