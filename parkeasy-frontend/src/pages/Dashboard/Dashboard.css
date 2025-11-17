@@ -277,7 +277,7 @@
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
   color: var(--text-primary);
-  min-height: 240px;
+  min-height: 280px; /* extra space so details fit without clipping */
   transition: all var(--transition-base);
   cursor: pointer;
   perspective: 1000px;
@@ -320,7 +320,7 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
-  overflow: hidden; /* ensure inner content stays within card */
+  overflow: hidden; /* keep visual bounds tidy */
 }
 
 .slot-front {
@@ -332,13 +332,14 @@
   transform: rotateY(180deg);
   justify-content: space-between;
   padding: var(--spacing-md);
+  overflow-y: auto; /* allow internal scroll when content is taller */
 }
 
 .slot-front-plain {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* start at top to utilize vertical space */
   gap: var(--spacing-sm);
   padding: var(--spacing-lg);
   height: 100%;
@@ -415,14 +416,30 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--spacing-sm);
+  flex-wrap: wrap; /* allow name and distance to wrap on small widths */
   overflow: hidden;
 }
 .slot-back-header .slot-name {
-  max-width: 70%;
+  max-width: 100%;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3; /* allow one extra line on back */
+  -webkit-box-orient: vertical;
 }
 .slot-back-stats {
   overflow: hidden;
   overflow-wrap: anywhere;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* compact two-column facts */
+  gap: var(--spacing-sm);
+}
+
+/* Actions on back face */
+.slot-back-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+  margin-top: var(--spacing-md);
 }
 
 .slot .slot-distance {
