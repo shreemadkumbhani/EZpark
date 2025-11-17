@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [bookingHour, setBookingHour] = useState(""); // Hour input for booking
   const [bookingMsg, setBookingMsg] = useState(""); // Booking status message
   const [bookingLoading, setBookingLoading] = useState(false); // Booking loading state
-  const [flippedId, setFlippedId] = useState(null); // ID of card currently flipped
+  const [flippedId, setFlippedId] = useState(null); // legacy (no longer used for flipping)
   const [expand, setExpand] = useState(null); // Expanding popup state
   const [notice, setNotice] = useState(""); // Non-blocking info message
   const [query, setQuery] = useState(""); // search query text
@@ -693,13 +693,9 @@ export default function Dashboard() {
     }
   }
 
-  // Flip cards on hover instead of click
-  function onCardEnter(lotId) {
-    setFlippedId(lotId);
-  }
-  function onCardLeave() {
-    setFlippedId(null);
-  }
+  // Flipping disabled; keep placeholders for compatibility
+  function onCardEnter() {}
+  function onCardLeave() {}
 
   // Start expanding popup from the clicked card element
   // Start expanding popup animation from the clicked card
@@ -885,7 +881,7 @@ export default function Dashboard() {
 
         <div className="slot-grid">
           {parkingLots.map((lot) => {
-            const isFlipped = flippedId === lot._id;
+            const isFlipped = false; // flipping disabled
             const status = getAvailabilityStatus(lot);
             return (
               <div
@@ -896,6 +892,10 @@ export default function Dashboard() {
                 } ${isFlipped ? "flipped" : ""}`}
                 onMouseEnter={() => onCardEnter(lot._id)}
                 onMouseLeave={() => onCardLeave()}
+                onClick={(e) => {
+                  const slotEl = e.currentTarget.closest(".slot");
+                  startExpandFrom(slotEl, lot);
+                }}
               >
                 <div className="slot-inner">
                   <div className="slot-front">
@@ -924,60 +924,6 @@ export default function Dashboard() {
                     </div>
                     <div className={`status-pill ${status.cls}`}>
                       {status.label}
-                    </div>
-                  </div>
-                  <div className="slot-back">
-                    <div className="slot-back-header">
-                      <div className="slot-name">{lot.name}</div>
-                      <div className="slot-distance">
-                        {formatDistance(lot.distance || 0)}
-                      </div>
-                    </div>
-                    <div className="slot-back-stats">
-                      <div>
-                        Slots: {lot.availableSlots} / {lot.totalSlots}
-                      </div>
-                      <div>Status: {status.label}</div>
-                      <div>Cars parked: {lot.carsParked || 0}</div>
-                      <div className="slot-progress">
-                        {(() => {
-                          const r = getOccupancyRatio(lot);
-                          const percentage = Math.round(r * 100);
-                          return (
-                            <div
-                              className="bar"
-                              title={`${percentage}% filled`}
-                            >
-                              <div
-                                className={`bar-fill ${barClassForRatio(r)}`}
-                                style={{ width: `${percentage}%` }}
-                              />
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                    <div className="slot-back-actions">
-                      <button
-                        className="confirm-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const slotEl = e.currentTarget.closest(".slot");
-                          startExpandFrom(slotEl, lot);
-                        }}
-                      >
-                        Book
-                      </button>
-                      <button
-                        className="retry-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDirections(lot);
-                        }}
-                        title="Open directions in Google Maps"
-                      >
-                        Directions
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1033,6 +979,13 @@ export default function Dashboard() {
                     }
                   >
                     {bookingLoading ? "Booking..." : "Book Slot"}
+                  </button>
+                  <button
+                    className="retry-button"
+                    onClick={() => openDirections(selectedLot)}
+                    title="Open directions in Google Maps"
+                  >
+                    Directions
                   </button>
                 </div>
                 {bookingMsg && (
