@@ -1,34 +1,29 @@
 // Booking History API routes
-// Handles: fetch user's booking history, create new bookings, cancel bookings, add reviews
+// Handles: fetch user's booking history, create new bookings, cancel bookings
 const express = require("express");
 const router = express.Router();
 const requireAuth = require("../middleware/authMiddleware");
 const {
-  addBooking,
-  generateDemoBookings,
-  getBookingsForUser,
+  createBooking,
+  getAllBookings,
+  getBookingsByUser,
+  getBookingsByParkingLot,
   getBookingsForLots,
+  getBookingById,
   updateBookingStatus,
   cancelBooking,
-  restockLotForCancelled,
-  addReview,
+  getOwnerStats,
 } = require("../services/bookingsService");
 const ParkingLot = require("../models/ParkingLot");
+const User = require("../models/User");
 
 // GET /api/bookings
 // Returns booking history for the authenticated user
 router.get("/", requireAuth, async (req, res) => {
   try {
-    let userBookings = getBookingsForUser(req.user.id);
-    if (userBookings.length === 0) {
-      // Seed with demo data for this user once
-      const demos = generateDemoBookings(req.user.id);
-      demos.forEach((b) => addBooking(b));
-      userBookings = getBookingsForUser(req.user.id);
-    }
-    // Compute status dynamically based on current time
-    const withStatus = updateBookingStatus(userBookings);
-    res.json({ bookings: withStatus });
+    const { status } = req.query;
+    const bookings = await getBookingsByUser(req.user.id, status);
+    res.json({ bookings });
   } catch (err) {
     console.error("Error fetching bookings:", err);
     res
@@ -37,35 +32,192 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/bookings/all (admin only)
+// Returns all bookings with pagination
+router.get("/all", requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const result = await getAllBookings(page, limit);
+    res.json(result);
+  } catch (err) {
+    console.error("Error fetching all bookings:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: err.message });
+  }
+});
+
+// GET /api/bookings/owner-lots
+// Returns bookings for all parking lots owned by the authenticated owner
+router.get("/owner-lots", requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== "owner" && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Owner or admin access required" });
+    }
+
+    const lots = await ParkingLot.find({ owner: req.user.id }).select("_id");
+    const lotIds = lots.map((lot) => lot._id);
+
+    const bookings = await getBookingsForLots(lotIds);
+    res.json({ bookings });
+  } catch (err) {
+    console.error("Error fetching owner bookings:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching owner bookings", error: err.message });
+  }
+});
+
+// GET /api/bookings/owner-stats
+// Returns booking statistics for owner
+router.get("/owner-stats", requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== "owner" && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Owner or admin access required" });
+    }
+
+    const lots = await ParkingLot.find({ owner: req.user.id }).select("_id");
+    const lotIds = lots.map((lot) => lot._id);
+
+    const stats = await getOwnerStats(lotIds);
+    res.json(stats);
+  } catch (err) {
+    console.error("Error fetching owner stats:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching owner stats", error: err.message });
+  }
+});
+
+// GET /api/bookings/lot/:lotId
+// Returns bookings for a specific parking lot
+router.get("/lot/:lotId", requireAuth, async (req, res) => {
+  try {
+    const { lotId } = req.params;
+    const { status } = req.query;
+
+    // Verify lot ownership for owners
+    if (req.user.role === "owner") {
+      const lot = await ParkingLot.findOne({ _id: lotId, owner: req.user.id });
+      if (!lot) {
+        return res
+          .status(403)
+          .json({ message: "You don't own this parking lot" });
+      }
+    }
+
+    const bookings = await getBookingsByParkingLot(lotId, status);
+    res.json({ bookings });
+  } catch (err) {
+    console.error("Error fetching lot bookings:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching lot bookings", error: err.message });
+  }
+});
+
+// GET /api/bookings/:id
+// Get a specific booking by ID
+router.get("/:id", requireAuth, async (req, res) => {
+  try {
+    const booking = await getBookingById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Check authorization
+    if (
+      req.user.role !== "admin" &&
+      booking.userId.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    res.json({ booking });
+  } catch (err) {
+    console.error("Error fetching booking:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching booking", error: err.message });
+  }
+});
+
 // POST /api/bookings
 // Create a new booking
 router.post("/", requireAuth, async (req, res) => {
   try {
     const {
-      lotName,
-      slot,
+      parkingLotId,
+      vehicleType,
+      vehicleNumber,
       startTime,
       endTime,
-      price,
-      vehicle,
-      latitude,
-      longitude,
+      duration,
     } = req.body;
-    const booking = addBooking({
+
+    // Validate required fields
+    if (
+      !parkingLotId ||
+      !vehicleType ||
+      !vehicleNumber ||
+      !startTime ||
+      !endTime
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Get parking lot details
+    const parkingLot = await ParkingLot.findById(parkingLotId);
+    if (!parkingLot) {
+      return res.status(404).json({ message: "Parking lot not found" });
+    }
+
+    // Check availability
+    if (parkingLot.availableSlots <= 0) {
+      return res.status(400).json({ message: "No slots available" });
+    }
+
+    // Get user details
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Calculate duration and price
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const hours = duration || Math.ceil((end - start) / (1000 * 60 * 60));
+    const totalPrice = hours * parkingLot.pricePerHour;
+
+    const bookingData = {
       userId: req.user.id,
-      lotName: lotName || "Unknown Lot",
-      slot: slot || `S${Math.floor(Math.random() * 100)}`,
-      time: Date.now(),
-      startTime: startTime || Date.now(),
-      endTime: endTime || Date.now() + 3600000,
-      price: price || Math.floor(Math.random() * 100) + 20,
-      vehicle: vehicle || "Unknown Vehicle",
-      latitude: latitude || 19.076,
-      longitude: longitude || 72.8777,
-      status: "Upcoming",
-      review: "",
-    });
-    res.status(201).json({ message: "Booking created", booking });
+      userName: user.name,
+      userEmail: user.email,
+      userPhone: user.phone,
+      parkingLotId,
+      parkingLotName: parkingLot.name,
+      vehicleType,
+      vehicleNumber,
+      startTime: start,
+      endTime: end,
+      duration: hours,
+      pricePerHour: parkingLot.pricePerHour,
+      totalPrice,
+      status: "active",
+    };
+
+    const booking = await createBooking(bookingData);
+    res.status(201).json({ message: "Booking created successfully", booking });
   } catch (err) {
     console.error("Error creating booking:", err);
     res
@@ -74,19 +226,50 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
+// PATCH /api/bookings/:id/status
+// Update booking status
+router.patch("/:id/status", requireAuth, async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!["active", "completed", "cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const booking = await updateBookingStatus(
+      req.params.id,
+      status,
+      req.user.role === "admin" ? null : req.user.id
+    );
+
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ message: "Booking not found or not authorized" });
+    }
+
+    res.json({ message: "Booking status updated", booking });
+  } catch (err) {
+    console.error("Error updating booking:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating booking", error: err.message });
+  }
+});
+
 // DELETE /api/bookings/:id
 // Cancel a booking
 router.delete("/:id", requireAuth, async (req, res) => {
   try {
-    const { id } = req.params;
-    const { ok, booking } = cancelBooking(id, req.user.id);
-    if (!ok)
+    const booking = await cancelBooking(req.params.id, req.user.id);
+
+    if (!booking) {
       return res
         .status(404)
         .json({ message: "Booking not found or not authorized" });
-    // Restock lot availability and decrement carsParked if possible
-    await restockLotForCancelled(booking, ParkingLot);
-    res.json({ message: "Booking cancelled successfully" });
+    }
+
+    res.json({ message: "Booking cancelled successfully", booking });
   } catch (err) {
     console.error("Error cancelling booking:", err);
     res
@@ -95,59 +278,4 @@ router.delete("/:id", requireAuth, async (req, res) => {
   }
 });
 
-// PATCH /api/bookings/:id/review
-// Add or update a review for a booking
-router.patch("/:id/review", requireAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { review } = req.body;
-    const updated = addReview(id, req.user.id, review);
-    if (!updated)
-      return res
-        .status(404)
-        .json({ message: "Booking not found or not authorized" });
-    res.json({ message: "Review saved successfully", booking: updated });
-  } catch (err) {
-    console.error("Error saving review:", err);
-    res
-      .status(500)
-      .json({ message: "Error saving review", error: err.message });
-  }
-});
-
 module.exports = router;
-
-// GET /api/bookings/owner-lots
-// Returns all bookings for parking lots owned by the authenticated owner/admin
-router.get("/owner-lots", requireAuth, async (req, res) => {
-  try {
-    if (!req.user || !["owner", "admin"].includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Only owners can view lot bookings" });
-    }
-    // Find all lots owned by this user
-    const lots = await ParkingLot.find(
-      { owner: req.user.id },
-      { _id: 1, name: 1 }
-    ).lean();
-    const lotIds = lots.map((l) => l._id.toString());
-    if (lotIds.length === 0) {
-      return res.json({ bookings: [], lots: [] });
-    }
-    let lotBookings = getBookingsForLots(lotIds);
-    // Update status dynamically
-    lotBookings = updateBookingStatus(lotBookings);
-    // Attach lot name for convenience (already stored but ensure freshness)
-    const nameMap = new Map(lots.map((l) => [l._id.toString(), l.name]));
-    lotBookings = lotBookings.map((b) => ({
-      ...b,
-      lotName: nameMap.get(String(b.lotId)) || b.lotName,
-    }));
-    res.json({ bookings: lotBookings, lots });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error fetching owner bookings", error: err.message });
-  }
-});

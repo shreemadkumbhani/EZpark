@@ -11,14 +11,27 @@ function formatDateTime(dt) {
 
 // Helper to get booking status
 function getStatus(booking) {
+  // Use status from database if available
+  if (booking.status) {
+    return booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
+  }
+  // Fallback to time-based calculation
   const now = Date.now();
-  if (booking.endTime && now > booking.endTime) return "Completed";
-  if (booking.startTime && now < booking.startTime) return "Upcoming";
+  if (booking.endTime && now > new Date(booking.endTime).getTime())
+    return "Completed";
+  if (booking.startTime && now < new Date(booking.startTime).getTime())
+    return "Upcoming";
   return "Active";
 }
 
 // Helper to get Google Maps link
 function getMapsLink(booking) {
+  // Try parkingLotId.location first (populated data)
+  if (booking.parkingLotId?.location?.coordinates) {
+    const [lng, lat] = booking.parkingLotId.location.coordinates;
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+  // Fallback to legacy fields
   if (booking.latitude && booking.longitude) {
     return `https://www.google.com/maps?q=${booking.latitude},${booking.longitude}`;
   }
@@ -27,9 +40,16 @@ function getMapsLink(booking) {
 
 // Helper to generate a QR code with booking details
 function getQRCodeUrl(booking) {
-  const qrData = `Booking ID: ${booking.id}\nLot: ${booking.lotName}\nSlot: ${
-    booking.slot
-  }\nTime: ${new Date(booking.time).toLocaleString()}`;
+  const lotName =
+    booking.parkingLotName ||
+    booking.lotName ||
+    booking.parkingLotId?.name ||
+    "Unknown";
+  const qrData = `Booking ID: ${
+    booking._id || booking.id
+  }\nLot: ${lotName}\nVehicle: ${
+    booking.vehicleNumber || booking.vehicle || "N/A"
+  }\nTime: ${new Date(booking.createdAt || booking.time).toLocaleString()}`;
   const encodedData = encodeURIComponent(qrData);
   return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodedData}&bgcolor=23232a&color=ffffff`;
 }
@@ -107,11 +127,10 @@ export default function BookingHistory() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       // Refresh bookings after successful cancellation
-      fetchBookings();
+      await fetchBookings();
     } catch (error) {
       console.error("Failed to cancel booking", error);
-      // Fallback: remove from UI only
-      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+      alert(error.response?.data?.message || "Failed to cancel booking");
     } finally {
       setCancelling((s) => ({ ...s, [bookingId]: false }));
     }
@@ -144,9 +163,22 @@ export default function BookingHistory() {
   const perPage = 2;
   let filtered = bookings;
   if (filter !== "all")
-    filtered = filtered.filter((b) => getStatus(b) === filter);
-  if (sort === "asc") filtered = [...filtered].sort((a, b) => a.time - b.time);
-  else filtered = [...filtered].sort((a, b) => b.time - a.time);
+    filtered = filtered.filter((b) => {
+      const status = getStatus(b);
+      return status.toLowerCase() === filter.toLowerCase();
+    });
+  if (sort === "asc")
+    filtered = [...filtered].sort((a, b) => {
+      const aTime = new Date(a.createdAt || a.time).getTime();
+      const bTime = new Date(b.createdAt || b.time).getTime();
+      return aTime - bTime;
+    });
+  else
+    filtered = [...filtered].sort((a, b) => {
+      const aTime = new Date(a.createdAt || a.time).getTime();
+      const bTime = new Date(b.createdAt || b.time).getTime();
+      return bTime - aTime;
+    });
   const totalPages = Math.ceil(filtered.length / perPage) || 1;
   const currentPage = Math.min(page, totalPages);
   const paged = filtered.slice(
@@ -211,8 +243,18 @@ export default function BookingHistory() {
             const globalIndex = (currentPage - 1) * perPage + index;
             const status = getStatus(booking);
             const mapsLink = getMapsLink(booking);
+            const bookingId = booking._id || booking.id;
+            const lotName =
+              booking.parkingLotName ||
+              booking.lotName ||
+              booking.parkingLotId?.name ||
+              "(Unknown)";
+            const vehicleNum = booking.vehicleNumber || booking.vehicle || "-";
+            const price = booking.totalPrice || booking.price || 0;
+            const bookingTime = booking.createdAt || booking.time;
+
             return (
-              <li key={booking.id || globalIndex} className="history-item">
+              <li key={bookingId || globalIndex} className="history-item">
                 {/* Hidden offscreen receipt template for image download only */}
                 <div
                   id={`receipt-card-${globalIndex}`}
@@ -238,16 +280,16 @@ export default function BookingHistory() {
                     ParkEasy Booking Receipt
                   </div>
                   <div>
-                    <b>Booking ID:</b> {booking.id}
+                    <b>Booking ID:</b> {bookingId}
                   </div>
                   <div>
-                    <b>Parking Lot:</b> {booking.lotName || "(Unknown)"}
+                    <b>Parking Lot:</b> {lotName}
                   </div>
                   <div>
-                    <b>Slot:</b> #{booking.slot}
+                    <b>Vehicle Type:</b> {booking.vehicleType || "N/A"}
                   </div>
                   <div>
-                    <b>Booked At:</b> {formatDateTime(booking.time)}
+                    <b>Booked At:</b> {formatDateTime(bookingTime)}
                   </div>
                   {booking.startTime && booking.endTime && (
                     <div>
@@ -259,10 +301,10 @@ export default function BookingHistory() {
                     <b>Status:</b> {status}
                   </div>
                   <div>
-                    <b>Price:</b> {booking.price ? `₹${booking.price}` : "-"}
+                    <b>Price:</b> ₹{price}
                   </div>
                   <div>
-                    <b>Vehicle:</b> {booking.vehicle || "-"}
+                    <b>Vehicle:</b> {vehicleNum}
                   </div>
                   {mapsLink && (
                     <div>
@@ -284,9 +326,7 @@ export default function BookingHistory() {
                 {/* Visible compact booking summary */}
                 <div className="booking-summary">
                   <div className="summary-header">
-                    <div className="summary-title">
-                      {booking.lotName || "(Unknown)"}
-                    </div>
+                    <div className="summary-title">{lotName}</div>
                     <div
                       className={`summary-status status-${status.toLowerCase()}`}
                     >
@@ -294,10 +334,11 @@ export default function BookingHistory() {
                     </div>
                   </div>
                   <div className="summary-row">
-                    <b>Slot:</b> #{booking.slot}
+                    <b>Vehicle:</b> {vehicleNum} ({booking.vehicleType || "N/A"}
+                    )
                   </div>
                   <div className="summary-row">
-                    <b>Booked:</b> {formatDateTime(booking.time)}
+                    <b>Booked:</b> {formatDateTime(bookingTime)}
                   </div>
                   {booking.startTime && booking.endTime && (
                     <div className="summary-row">
@@ -306,10 +347,10 @@ export default function BookingHistory() {
                     </div>
                   )}
                   <div className="summary-row">
-                    <b>Price:</b> {booking.price ? `₹${booking.price}` : "-"}
+                    <b>Duration:</b> {booking.duration || "N/A"} hours
                   </div>
                   <div className="summary-row">
-                    <b>Vehicle:</b> {booking.vehicle || "-"}
+                    <b>Price:</b> ₹{price}
                   </div>
                   {mapsLink && (
                     <div className="summary-row">
@@ -330,42 +371,14 @@ export default function BookingHistory() {
                 >
                   Download Receipt
                 </button>
-                {status === "Upcoming" && (
+                {(status === "Upcoming" || status === "Active") && (
                   <button
                     className="cancel-btn"
-                    disabled={!!cancelling[booking.id]}
-                    onClick={() => handleCancelById(booking.id)}
+                    disabled={!!cancelling[bookingId]}
+                    onClick={() => handleCancelById(bookingId)}
                   >
-                    Cancel Booking
+                    {cancelling[bookingId] ? "Cancelling..." : "Cancel Booking"}
                   </button>
-                )}
-                {status === "Completed" && (
-                  <div className="review-section">
-                    <label>
-                      Review:
-                      <input
-                        type="text"
-                        value={review[booking.id] ?? booking.review ?? ""}
-                        onChange={(e) =>
-                          setReview((r) => ({
-                            ...r,
-                            [booking.id]: e.target.value,
-                          }))
-                        }
-                        placeholder="Write a review..."
-                        style={{ marginLeft: 8 }}
-                      />
-                    </label>
-                    <button
-                      className="review-btn"
-                      onClick={() =>
-                        handleReviewById(booking.id, review[booking.id] || "")
-                      }
-                      style={{ marginLeft: 8 }}
-                    >
-                      Save
-                    </button>
-                  </div>
                 )}
               </li>
             );
