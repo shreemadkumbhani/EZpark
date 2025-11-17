@@ -29,6 +29,7 @@ export default function Dashboard() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sugPos, setSugPos] = useState({ left: 0, top: 0, width: 0 });
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [locating, setLocating] = useState(false);
   const mapRef = useRef(null);
   const searchInputRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const searchMarkerRef = useRef(null);
   const searchIconRef = useRef(null);
   const manualCenterRef = useRef(false);
+  const hasFitOnceRef = useRef(false);
 
   // Cross-device precise dropdown position using visualViewport
   const computeSugPos = useCallback(() => {
@@ -157,10 +159,13 @@ export default function Dashboard() {
     }
   }, []);
 
-  const fetchParkingLots = useCallback(async (coords) => {
-    setLoading(true);
-    setError("");
-    setNotice("");
+  const fetchParkingLots = useCallback(async (coords, opts = {}) => {
+    const { silent = false } = opts;
+    if (!silent) {
+      setLoading(true);
+      setError("");
+      setNotice("");
+    }
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE}/api/parkinglots`, {
@@ -183,13 +188,68 @@ export default function Dashboard() {
         err.response?.data?.message ||
         err.message ||
         "Could not fetch parking lots.";
-      setError(msg);
+      if (!silent) setError(msg);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
   // Ask for user's location and load parking lots
+  // More robust geo acquisition: try getCurrentPosition, then fallback to watchPosition
+  const getPreciseLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!("geolocation" in navigator)) {
+        return reject(new Error("Geolocation not supported"));
+      }
+      let settled = false;
+      let watchId = null;
+      const cleanup = () => {
+        if (watchId != null) {
+          try {
+            navigator.geolocation.clearWatch(watchId);
+          } catch {}
+        }
+      };
+      // Primary attempt
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          });
+        },
+        (err) => {
+          // Fallback: watchPosition for up to 8s to get a fresher fix
+          try {
+            watchId = navigator.geolocation.watchPosition(
+              (pos) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                resolve({
+                  latitude: pos.coords.latitude,
+                  longitude: pos.coords.longitude,
+                });
+              },
+              () => {},
+              { enableHighAccuracy: true, maximumAge: 0 }
+            );
+          } catch {}
+          setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            reject(err);
+          }, 8000);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    });
+  }, []);
+
   const askLocationAndLoad = useCallback(() => {
     if (!("geolocation" in navigator)) {
       setNotice(
@@ -200,36 +260,36 @@ export default function Dashboard() {
     }
 
     setLoading(true);
+    setLocating(true);
     setError("");
     setNotice("Requesting your location...");
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        const coords = { latitude, longitude };
+    getPreciseLocation()
+      .then((coords) => {
         setNotice("Location acquired! Loading nearby parking lots...");
         fetchParkingLots(coords);
-
-        // Center map on user location
         if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView([latitude, longitude], 14);
+          mapInstanceRef.current.setView(
+            [coords.latitude, coords.longitude],
+            14
+          );
         }
-      },
-      (error) => {
-        let errorMsg = "Location access denied. ";
-        if (error.code === 1) {
-          errorMsg =
-            "Location permission denied. Please enable location access in your browser settings. ";
-        } else if (error.code === 2) {
-          errorMsg = "Location unavailable. ";
-        } else if (error.code === 3) {
-          errorMsg = "Location request timeout. ";
+      })
+      .catch((error) => {
+        let errorMsg = "Couldn’t determine your location. ";
+        if (error && typeof error.code === "number") {
+          if (error.code === 1) {
+            errorMsg =
+              "Location permission denied. Please enable location access in your browser settings. ";
+          } else if (error.code === 2) {
+            errorMsg = "Location unavailable. ";
+          } else if (error.code === 3) {
+            errorMsg = "Location request timeout. ";
+          }
         }
         setNotice(errorMsg + "Using default location (Ahmedabad).");
         fetchParkingLots(DEFAULT_COORDS);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+      })
+      .finally(() => setLocating(false));
   }, [fetchParkingLots]);
 
   // On mount, ask for location and load lots, and fetch all lots for map
@@ -241,7 +301,7 @@ export default function Dashboard() {
   // Auto refresh at intervals (always on)
   useEffect(() => {
     const id = setInterval(() => {
-      fetchParkingLots(currentCoordsRef.current);
+      fetchParkingLots(currentCoordsRef.current, { silent: true });
     }, 15000);
     return () => clearInterval(id);
   }, [fetchParkingLots]);
@@ -358,9 +418,10 @@ export default function Dashboard() {
         ...(userMarkerRef.current ? [userMarkerRef.current] : []),
       ]);
       try {
-        // If user manually centered via search, keep their view; otherwise fit to markers
-        if (!manualCenterRef.current) {
+        // Fit to markers only once on initial load unless user forced a recenter
+        if (!manualCenterRef.current && !hasFitOnceRef.current) {
           map.fitBounds(group.getBounds().pad(0.2));
+          hasFitOnceRef.current = true;
         }
       } catch (err) {
         void err;
@@ -776,8 +837,12 @@ export default function Dashboard() {
           <button className="small-button" onClick={handleSearch}>
             Search
           </button>
-          <button className="small-button" onClick={useMyLocation}>
-            Use My Location
+          <button
+            className="small-button"
+            onClick={useMyLocation}
+            disabled={locating}
+          >
+            {locating ? "Locating…" : "Use My Location"}
           </button>
           {searching && <span style={{ marginLeft: 8 }}>Searching…</span>}
           {/* Auto-refresh is now permanent; toggle removed */}

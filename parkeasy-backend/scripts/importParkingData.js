@@ -1,4 +1,4 @@
-// Script to import Ahmedabad parking data from CSV file
+// Script to import parking data from a CSV file (Ahmedabad/Gandhinagar/etc.)
 require("dotenv").config({ path: __dirname + "/../.env" });
 const mongoose = require("mongoose");
 const fs = require("fs");
@@ -45,7 +45,7 @@ function parseCSV(csvContent) {
 // Convert CSV row to ParkingLot format
 function csvToParkingLot(csvRow) {
   // Parse address to extract components
-  const fullAddress = csvRow.address.replace(/"/g, "");
+  const fullAddress = (csvRow.address || "").replace(/"/g, "");
   const addressParts = fullAddress.split(",").map((part) => part.trim());
 
   // Extract city, state from address
@@ -54,13 +54,18 @@ function csvToParkingLot(csvRow) {
   let line1 = addressParts[0] || "";
   let line2 = addressParts.length > 1 ? addressParts[1] : "";
 
-  // If address contains "Ahmedabad", use it as city reference
-  if (fullAddress.includes("Ahmedabad")) {
+  // Infer city from address keywords
+  if (/Gandhinagar/i.test(fullAddress) || /Karnavati/i.test(fullAddress)) {
+    city = "Gandhinagar";
+  } else if (/Ahmedabad/i.test(fullAddress)) {
     city = "Ahmedabad";
   }
   if (fullAddress.includes("Gujarat")) {
     state = "Gujarat";
   }
+
+  // Pick a sensible default pincode by city (best-effort)
+  const defaultPincode = city === "Gandhinagar" ? "382010" : "380000";
 
   return {
     name: csvRow.name,
@@ -82,7 +87,7 @@ function csvToParkingLot(csvRow) {
           : "On-Street Parking",
       city: city,
       state: state,
-      pincode: "380000", // Default Ahmedabad pincode
+      pincode: defaultPincode,
     },
     totalSlots: parseInt(csvRow.totalSlots) || 100,
     availableSlots: parseInt(csvRow.availableSlots) || 50,
@@ -102,7 +107,11 @@ async function importParkingData() {
     console.log("✅ Connected to MongoDB successfully!");
 
     // Read CSV file
-    const csvPath = path.join(__dirname, "../../ahmedabad_parking_200.csv");
+    const argPath = process.argv[2];
+    // Allow passing a relative path from this scripts directory (e.g., ../../gandhinagar_karnavati_parking.csv)
+    const csvPath = argPath
+      ? path.resolve(__dirname, argPath)
+      : path.join(__dirname, "../../ahmedabad_parking_200.csv");
     console.log("📁 Reading CSV file:", csvPath);
 
     if (!fs.existsSync(csvPath)) {
@@ -126,13 +135,24 @@ async function importParkingData() {
       try {
         const parkingLotData = csvToParkingLot(csvRow);
 
-        // Check if parking lot with this name already exists (simplified check)
+        // Check for very close existing lot (avoid duplicates within ~100m)
         const existingLot = await ParkingLot.findOne({
-          name: parkingLotData.name,
+          location: {
+            $near: {
+              $geometry: {
+                type: "Point",
+                coordinates: [
+                  parkingLotData.location.coordinates[0],
+                  parkingLotData.location.coordinates[1],
+                ],
+              },
+              $maxDistance: 100,
+            },
+          },
         });
 
         if (existingLot) {
-          console.log(`⚠️  Skipping duplicate: ${parkingLotData.name}`);
+          console.log(`⚠️  Skipping nearby duplicate: ${parkingLotData.name}`);
           skippedCount++;
           continue;
         }

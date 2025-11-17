@@ -282,6 +282,7 @@
   cursor: pointer;
   perspective: 1000px;
   touch-action: manipulation;
+  overflow: hidden; /* prevent content overflow */
 }
 
 .slot:hover,
@@ -319,6 +320,7 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
+  overflow: hidden; /* ensure inner content stays within card */
 }
 
 .slot-front {
@@ -341,6 +343,7 @@
   padding: var(--spacing-lg);
   height: 100%;
   text-align: center;
+  overflow: hidden;
 }
 
 .slot-progress {
@@ -402,6 +405,24 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  overflow-wrap: anywhere; /* wrap long names/words */
+  word-break: break-word;
+}
+
+/* Back face header to keep name + distance neatly within width */
+.slot-back-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  overflow: hidden;
+}
+.slot-back-header .slot-name {
+  max-width: 70%;
+}
+.slot-back-stats {
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .slot .slot-distance {
