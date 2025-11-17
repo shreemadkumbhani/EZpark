@@ -114,14 +114,11 @@ export default function Navbar() {
                 </li>
               </>
             )}
-            <li>
-              {/* Show Add Parking if owner, else Become Owner */}
-              {role === "owner" || role === "admin" ? (
+            {(role === "owner" || role === "admin") && (
+              <li>
                 <Link to="/owner/register">Add Parking</Link>
-              ) : (
-                <Link to="/owner/register">Become Owner</Link>
-              )}
-            </li>
+              </li>
+            )}
             <li>
               <button onClick={handleLogout} className="logout-btn">
                 Logout
@@ -206,23 +203,16 @@ export default function Navbar() {
                       </li>
                     </>
                   )}
-                  <li>
-                    {role === "owner" || role === "admin" ? (
+                  {(role === "owner" || role === "admin") && (
+                    <li>
                       <Link
                         to="/owner/register"
                         onClick={() => setMenuOpen(false)}
                       >
                         Add Parking
                       </Link>
-                    ) : (
-                      <Link
-                        to="/owner/register"
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        Become Owner
-                      </Link>
-                    )}
-                  </li>
+                    </li>
+                  )}
                   <li>
                     <button onClick={handleLogout} className="logout-btn">
                       Logout
