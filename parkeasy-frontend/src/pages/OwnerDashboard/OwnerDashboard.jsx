@@ -10,9 +10,11 @@ export default function OwnerDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
-    async function load() {
+    async function initialLoad() {
       setLoading(true);
       setError("");
       try {
@@ -24,18 +26,19 @@ export default function OwnerDashboard() {
         ]);
         setLots(lotsRes.data?.parkingLots || []);
         setBookings(bookingsRes.data?.bookings || []);
+        setLastUpdated(new Date());
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load owner data");
       } finally {
         setLoading(false);
       }
     }
-    if (role === "owner" || role === "admin") load();
+    if (role === "owner" || role === "admin") initialLoad();
   }, [role]);
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
-    async function refresh() {
+    async function autoRefresh() {
       if (role !== "owner" && role !== "admin") return;
       try {
         const token = localStorage.getItem("token");
@@ -46,13 +49,34 @@ export default function OwnerDashboard() {
         ]);
         setLots(lotsRes.data?.parkingLots || []);
         setBookings(bookingsRes.data?.bookings || []);
+        setLastUpdated(new Date());
       } catch (err) {
-        console.error("Failed to refresh owner data", err);
+        // Silent fail for auto refresh
       }
     }
-    const interval = setInterval(refresh, 30000);
+    const interval = setInterval(autoRefresh, 15000); // 15s interval for fresher updates
     return () => clearInterval(interval);
   }, [role]);
+
+  async function manualRefresh() {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const [lotsRes, bookingsRes] = await Promise.all([
+        axios.get(`${API_BASE}/api/parkinglots/owner`, { headers }),
+        axios.get(`${API_BASE}/api/bookings/owner-lots`, { headers }),
+      ]);
+      setLots(lotsRes.data?.parkingLots || []);
+      setBookings(bookingsRes.data?.bookings || []);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setError(err.response?.data?.message || "Refresh failed");
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   // Group bookings by parkingLotId (MongoDB field)
   const grouped = bookings.reduce((acc, b) => {
@@ -61,6 +85,14 @@ export default function OwnerDashboard() {
     acc[k].push(b);
     return acc;
   }, {});
+
+  // Pre-sort bookings inside groups by startTime (recent first)
+  const sortedGroupedEntries = Object.entries(grouped).map(([lotId, list]) => {
+    const sorted = [...list].sort(
+      (a, b) => new Date(b.startTime) - new Date(a.startTime)
+    );
+    return [lotId, sorted];
+  });
 
   return (
     <div className="owner-dash-wrap">
@@ -72,6 +104,24 @@ export default function OwnerDashboard() {
       {error && <p style={{ color: "#dc2626" }}>{error}</p>}
       {!loading && !error && (role === "owner" || role === "admin") && (
         <div className="owner-dash-content">
+          <div className="owner-controls" style={{ marginBottom: 20 }}>
+            <button
+              onClick={manualRefresh}
+              disabled={refreshing}
+              className="small-button"
+              style={{ minWidth: 120 }}
+            >
+              {refreshing ? "Refreshing…" : "Refresh"}
+            </button>
+            <span style={{ marginLeft: 12, fontSize: "0.75rem", opacity: 0.8 }}>
+              {lastUpdated
+                ? `Last updated: ${lastUpdated.toLocaleTimeString()}`
+                : "Not updated yet"}
+            </span>
+            <span style={{ marginLeft: 16, fontSize: "0.75rem" }}>
+              Active bookings: {bookings.filter((b) => b.status === "active").length}
+            </span>
+          </div>
           <section className="owner-lots">
             <h3>Your Lots ({lots.length})</h3>
             {lots.length === 0 && <p>No lots registered yet.</p>}
@@ -92,7 +142,7 @@ export default function OwnerDashboard() {
           <section className="owner-bookings">
             <h3>Customer Bookings ({bookings.length})</h3>
             {bookings.length === 0 && <p>No bookings yet.</p>}
-            {Object.entries(grouped).map(([lotId, list]) => {
+            {sortedGroupedEntries.map(([lotId, list]) => {
               const lot = lots.find((l) => l._id === lotId);
               return (
                 <div key={lotId} className="booking-group">
