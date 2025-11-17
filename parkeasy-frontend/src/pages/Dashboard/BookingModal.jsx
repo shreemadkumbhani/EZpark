@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE } from "../../config";
 import "./BookingModal.css";
@@ -11,6 +12,7 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,9 +40,10 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
         duration,
       };
 
-      await axios.post(`${API_BASE}/api/bookings`, bookingData, {
+      const res = await axios.post(`${API_BASE}/api/bookings`, bookingData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      const created = res.data?.booking;
 
       // Set flag for cross-tab updates
       try {
@@ -50,6 +53,23 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
       // Notify success
       if (onSuccess) onSuccess();
       onClose();
+
+      // Redirect to mock payment page with booking context (demo only)
+      try {
+        if (created?._id) {
+          navigate(
+            `/payment?bookingId=${created._id}&amount=${encodeURIComponent(
+              created.totalPrice || totalPrice
+            )}&lot=${encodeURIComponent(lot.name)}`
+          );
+        } else {
+          navigate(
+            `/payment?amount=${encodeURIComponent(totalPrice)}&lot=${encodeURIComponent(
+              lot.name
+            )}`
+          );
+        }
+      } catch {}
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Failed to create booking"

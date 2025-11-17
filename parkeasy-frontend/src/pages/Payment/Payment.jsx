@@ -1,15 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./Payment.css";
 
 export default function Payment() {
+  const [searchParams] = useSearchParams();
+  const bookingId = searchParams.get("bookingId");
+  const passedAmount = searchParams.get("amount");
+  const lotName = searchParams.get("lot");
   const [form, setForm] = useState({
     name: "",
     card: "",
     expiry: "",
     cvv: "",
-    amount: "5.00",
+    amount: passedAmount || "5.00",
     email: "",
   });
+  const [cardError, setCardError] = useState("");
+    // Simple Luhn check for realism (still mock)
+    function luhnValid(num) {
+      const digits = (num || "").replace(/\D/g, "").split("").reverse();
+      if (digits.length < 12) return false;
+      let sum = 0;
+      for (let i = 0; i < digits.length; i++) {
+        let d = parseInt(digits[i], 10);
+        if (i % 2 === 1) {
+          d *= 2;
+          if (d > 9) d -= 9;
+        }
+        sum += d;
+      }
+      return sum % 10 === 0;
+    }
+
+    useEffect(() => {
+      if (!form.card) {
+        setCardError("");
+        return;
+      }
+      if (!luhnValid(form.card)) {
+        setCardError("Card number looks invalid (Luhn check failed)");
+      } else {
+        setCardError("");
+      }
+    }, [form.card]);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -80,6 +113,9 @@ export default function Payment() {
               />
             </label>
           </div>
+          {cardError && (
+            <div style={{ color: "#f87171", fontSize: "0.75rem" }}>{cardError}</div>
+          )}
           <div className="form-row two">
             <label>
               CVV
@@ -118,7 +154,7 @@ export default function Payment() {
               />
             </label>
           </div>
-          <button className="pay-btn" disabled={submitting}>
+          <button className="pay-btn" disabled={submitting || !!cardError}>
             {submitting ? "Processing…" : "Pay Now"}
           </button>
         </form>
@@ -129,6 +165,12 @@ export default function Payment() {
               Transaction ID: <code>{result.id}</code>
             </p>
             <p>Amount Charged: ${result.amount}</p>
+            {bookingId && (
+              <p style={{ fontSize: "0.75rem" }}>Related Booking: {bookingId}</p>
+            )}
+            {lotName && (
+              <p style={{ fontSize: "0.75rem" }}>Parking Lot: {lotName}</p>
+            )}
             <p style={{ fontSize: "0.75rem", opacity: 0.8 }}>
               (Not a real charge. Demo environment.)
             </p>
