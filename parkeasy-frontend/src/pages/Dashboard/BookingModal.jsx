@@ -64,9 +64,9 @@ export default function BookingModal({ lot, onClose, onSuccess }) {
           );
         } else {
           navigate(
-            `/payment?amount=${encodeURIComponent(totalPrice)}&lot=${encodeURIComponent(
-              lot.name
-            )}`
+            `/payment?amount=${encodeURIComponent(
+              totalPrice
+            )}&lot=${encodeURIComponent(lot.name)}`
           );
         }
       } catch {}

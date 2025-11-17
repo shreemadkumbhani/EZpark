@@ -1,4 +1,4 @@
-require("dotenv").config({ path: __dirname + '/.env' });
+require("dotenv").config({ path: __dirname + "/.env" });
 const app = require("./app");
 const mongoose = require("mongoose");
 const cron = require("node-cron");

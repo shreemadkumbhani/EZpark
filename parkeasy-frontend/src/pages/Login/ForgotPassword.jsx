@@ -20,7 +20,7 @@ export default function ForgotPassword() {
       const res = await axios.post(`${API_BASE}/api/auth/forgot-password`, {
         email,
       });
-      
+
       // Extract token and redirect user to reset password page
       if (res.data?.resetUrl) {
         try {
@@ -34,11 +34,11 @@ export default function ForgotPassword() {
           console.error("Failed to parse reset URL:", err);
         }
       }
-      
+
       // Fallback: show success message if redirect fails
       setMessage(
         res.data?.message ||
-        "If that email exists, check your inbox for reset instructions."
+          "If that email exists, check your inbox for reset instructions."
       );
     } catch (err) {
       setError(

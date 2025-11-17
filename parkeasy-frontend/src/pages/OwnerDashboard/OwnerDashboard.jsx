@@ -119,7 +119,8 @@ export default function OwnerDashboard() {
                 : "Not updated yet"}
             </span>
             <span style={{ marginLeft: 16, fontSize: "0.75rem" }}>
-              Active bookings: {bookings.filter((b) => b.status === "active").length}
+              Active bookings:{" "}
+              {bookings.filter((b) => b.status === "active").length}
             </span>
           </div>
           <section className="owner-lots">

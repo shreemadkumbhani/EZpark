@@ -48,11 +48,13 @@ router.post(":id/book", requireAuth, async (req, res) => {
   const { id } = req.params;
   const { hour, vehicleType = "car", vehicleNumber = "UNKNOWN" } = req.body;
   const duration = parseFloat(hour || req.body.duration) || 1;
-  if (duration <= 0) return res.status(400).json({ message: "Invalid duration" });
+  if (duration <= 0)
+    return res.status(400).json({ message: "Invalid duration" });
   try {
     const lot = await ParkingLot.findById(id);
     if (!lot) return res.status(404).json({ message: "Parking lot not found" });
-    if (lot.availableSlots < 1) return res.status(400).json({ message: "No slots available" });
+    if (lot.availableSlots < 1)
+      return res.status(400).json({ message: "No slots available" });
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -91,11 +93,17 @@ router.post(":id/book", requireAuth, async (req, res) => {
 router.post("/", requireAuth, async (req, res) => {
   try {
     if (!req.user || !["owner", "admin"].includes(req.user.role)) {
-      return res.status(403).json({ message: "Only owners can register parking" });
+      return res
+        .status(403)
+        .json({ message: "Only owners can register parking" });
     }
     const { name, latitude, longitude, totalSlots, pricePerHour } = req.body;
     if (!name || latitude == null || longitude == null || !totalSlots) {
-      return res.status(400).json({ message: "name, latitude, longitude, totalSlots are required" });
+      return res
+        .status(400)
+        .json({
+          message: "name, latitude, longitude, totalSlots are required",
+        });
     }
     const lot = new ParkingLot({
       name,
@@ -111,7 +119,9 @@ router.post("/", requireAuth, async (req, res) => {
     await lot.save();
     res.status(201).json({ message: "Parking lot registered", lot });
   } catch (err) {
-    res.status(500).json({ message: "Failed to register parking lot", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to register parking lot", error: err.message });
   }
 });
 
