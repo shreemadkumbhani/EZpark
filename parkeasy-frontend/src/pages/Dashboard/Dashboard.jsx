@@ -20,7 +20,6 @@ export default function Dashboard() {
   const [bookingHour, setBookingHour] = useState(""); // Hour input for booking
   const [bookingMsg, setBookingMsg] = useState(""); // Booking status message
   const [bookingLoading, setBookingLoading] = useState(false); // Booking loading state
-  const [flippedId, setFlippedId] = useState(null); // legacy (no longer used for flipping)
   const [expand, setExpand] = useState(null); // Expanding popup state
   const [notice, setNotice] = useState(""); // Non-blocking info message
   const [query, setQuery] = useState(""); // search query text
@@ -211,7 +210,9 @@ export default function Dashboard() {
         if (watchId != null) {
           try {
             navigator.geolocation.clearWatch(watchId);
-          } catch {}
+          } catch (e) {
+            void e;
+          }
         }
       };
       // Primary attempt
@@ -241,7 +242,9 @@ export default function Dashboard() {
               () => {},
               { enableHighAccuracy: true, maximumAge: 0 }
             );
-          } catch {}
+          } catch (e) {
+            void e;
+          }
           setTimeout(() => {
             if (settled) return;
             settled = true;
@@ -294,7 +297,7 @@ export default function Dashboard() {
         fetchParkingLots(DEFAULT_COORDS);
       })
       .finally(() => setLocating(false));
-  }, [fetchParkingLots]);
+  }, [fetchParkingLots, getPreciseLocation]);
 
   // On mount, ask for location and load lots, and fetch all lots for map
   useEffect(() => {
