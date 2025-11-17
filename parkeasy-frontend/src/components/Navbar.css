@@ -4,15 +4,20 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-lg);
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(99, 102, 241, 0.2);
   color: var(--text-primary);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-base);
+  min-height: 60px;
+  box-sizing: border-box;
 }
 
 .navbar-brand {

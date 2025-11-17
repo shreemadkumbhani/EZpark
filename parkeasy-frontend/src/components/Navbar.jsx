@@ -83,9 +83,12 @@ export default function Navbar() {
         <li>
           <Link to="/about">About</Link>
         </li>
-        <li>
-          <Link to="/payment">Payment</Link>
-        </li>
+        {/* Only show payment for regular users, not owners */}
+        {isAuthed && role !== "owner" && role !== "admin" && (
+          <li>
+            <Link to="/payment">Payment</Link>
+          </li>
+        )}
         {/* Show Login/Register if not logged in */}
         {!isAuthed && (
           <>
@@ -153,11 +156,14 @@ export default function Navbar() {
                   About
                 </Link>
               </li>
-              <li>
-                <Link to="/payment" onClick={() => setMenuOpen(false)}>
-                  Payment
-                </Link>
-              </li>
+              {/* Only show payment for regular users, not owners */}
+              {isAuthed && role !== "owner" && role !== "admin" && (
+                <li>
+                  <Link to="/payment" onClick={() => setMenuOpen(false)}>
+                    Payment
+                  </Link>
+                </li>
+              )}
               {!isAuthed && (
                 <>
                   <li>
