@@ -1,5 +1,5 @@
 // Dashboard page for users to view and book nearby parking lots
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config";
 import "./Dashboard.css";
@@ -40,6 +40,11 @@ export default function Dashboard() {
   const searchIconRef = useRef(null);
   const manualCenterRef = useRef(false);
   const hasFitOnceRef = useRef(false);
+
+  // Filters state
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [rangeKm, setRangeKm] = useState(5); // search radius in km
+  const [selectedArea, setSelectedArea] = useState("all"); // area filter by city
 
   // Cross-device precise dropdown position using visualViewport
   const computeSugPos = useCallback(() => {
@@ -172,7 +177,11 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE}/api/parkinglots`, {
-        params: { lat: coords.latitude, lng: coords.longitude, radius: 5000 },
+        params: {
+          lat: coords.latitude,
+          lng: coords.longitude,
+          radius: Math.max(500, Math.round(((rangeKm || 5) * 1000))),
+        },
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       setParkingLots(res.data.parkingLots || []);
@@ -195,7 +204,7 @@ export default function Dashboard() {
     } finally {
       if (!silent) setLoading(false);
     }
-  }, []);
+  }, [rangeKm]);
 
   // Ask for user's location and load parking lots
   // More robust geo acquisition: try getCurrentPosition, then fallback to watchPosition
@@ -312,6 +321,55 @@ export default function Dashboard() {
     }, 15000);
     return () => clearInterval(id);
   }, [fetchParkingLots]);
+
+  // Refetch silently when the search radius changes
+  useEffect(() => {
+    fetchParkingLots(currentCoordsRef.current, { silent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rangeKm]);
+
+  // Haversine distance (in meters) for nearby area computation
+  function haversine(lat1, lon1, lat2, lon2) {
+    const toRad = (v) => (v * Math.PI) / 180;
+    const R = 6371e3;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // Dynamic nearby areas (by city) around current location
+  const nearbyAreas = useMemo(() => {
+    const cur = currentCoordsRef.current;
+    const byCity = new Map();
+    allParkingLots.forEach((lot) => {
+      const city = lot?.address?.city?.trim();
+      const coords = lot?.location?.coordinates;
+      if (!city || !Array.isArray(coords)) return;
+      const lat = coords[1];
+      const lon = coords[0];
+      if (lat == null || lon == null) return;
+      const d = haversine(cur.latitude, cur.longitude, lat, lon);
+      if (d <= 20000) {
+        const prev = byCity.get(city);
+        if (!prev || d < prev) byCity.set(city, d);
+      }
+    });
+    return Array.from(byCity.entries())
+      .sort((a, b) => a[1] - b[1])
+      .map(([name]) => name);
+  }, [allParkingLots]);
+
+  // Filtered list according to selected area
+  const displayLots = useMemo(() => {
+    const base = parkingLots.filter(Boolean);
+    if (selectedArea === "all") return base;
+    return base.filter((l) => (l?.address?.city || "").trim() === selectedArea);
+  }, [parkingLots, selectedArea]);
 
   // Initialize map once
   useEffect(() => {
@@ -849,12 +907,79 @@ export default function Dashboard() {
           >
             {locating ? "Locating…" : "Use My Location"}
           </button>
+          <button
+            className="small-button"
+            style={{ marginLeft: 8 }}
+            onClick={() => setFiltersOpen((v) => !v)}
+          >
+            {filtersOpen ? "Close Filters" : "Filters"}
+          </button>
           {searching && <span style={{ marginLeft: 8 }}>Searching…</span>}
           {/* Auto-refresh is now permanent; toggle removed */}
           <div className="last-updated">
             {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : ""}
           </div>
         </div>
+
+        {filtersOpen && (
+          <div
+            className="filters-panel"
+            style={{
+              position: "fixed",
+              left: 12,
+              top: 92,
+              width: 300,
+              maxWidth: "90vw",
+              background: "#0b1220",
+              color: "#e5e7eb",
+              border: "1px solid #1f2937",
+              borderRadius: 10,
+              padding: 12,
+              zIndex: 1000,
+              boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
+            }}
+          >
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>Filters</div>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 13, opacity: 0.9, marginBottom: 4 }}>
+                Search radius: {rangeKm} km
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={25}
+                step={1}
+                value={rangeKm}
+                onChange={(e) => setRangeKm(Number(e.target.value) || 5)}
+                style={{ width: "100%" }}
+              />
+              <button
+                className="small-button"
+                style={{ marginTop: 8 }}
+                onClick={() => fetchParkingLots(currentCoordsRef.current)}
+              >
+                Apply Radius
+              </button>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, opacity: 0.9, marginBottom: 4 }}>
+                Areas near you
+              </div>
+              <select
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+                style={{ width: "100%", padding: 8, borderRadius: 8 }}
+              >
+                <option value="all">All areas</option>
+                {nearbyAreas.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
         <div className="map-wrap">
           <div id="dashboard-map" ref={mapRef} />
@@ -889,7 +1014,7 @@ export default function Dashboard() {
         )}
 
         <div className="slot-grid">
-          {parkingLots.filter(Boolean).map((lot) => {
+          {displayLots.map((lot) => {
             const isFlipped = false; // flipping disabled
             const status = getAvailabilityStatus(lot);
             return (
@@ -964,7 +1089,7 @@ export default function Dashboard() {
                 </div>
                 <div className="meta">
                   Distance: {formatDistance(selectedLot.distance || 0)} • Slots
-                  left: {selectedLot?.availableSlots ?? 0} • Cars parked: {" "}
+                  left: {selectedLot?.availableSlots ?? 0} • Cars parked:{" "}
                   {selectedLot?.carsParked || 0}
                 </div>
                 <div className="booking-controls" style={{ marginTop: 8 }}>
@@ -984,7 +1109,7 @@ export default function Dashboard() {
                     disabled={
                       bookingLoading ||
                       !bookingHour ||
-                      (Number(selectedLot?.availableSlots || 0) < 1)
+                      Number(selectedLot?.availableSlots || 0) < 1
                     }
                   >
                     {bookingLoading ? "Booking..." : "Book Slot"}
