@@ -41,10 +41,23 @@ export default function Dashboard() {
   const manualCenterRef = useRef(false);
   const hasFitOnceRef = useRef(false);
 
-  // Filters state
+  // Filters state with localStorage persistence
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [rangeKm, setRangeKm] = useState(5); // search radius in km
-  const [selectedArea, setSelectedArea] = useState("all"); // area filter by city
+  const [rangeKm, setRangeKm] = useState(() => {
+    try {
+      const saved = localStorage.getItem("parkingFilters:rangeKm");
+      return saved ? Number(saved) : 5;
+    } catch {
+      return 5;
+    }
+  });
+  const [selectedArea, setSelectedArea] = useState(() => {
+    try {
+      return localStorage.getItem("parkingFilters:area") || "all";
+    } catch {
+      return "all";
+    }
+  });
 
   // Cross-device precise dropdown position using visualViewport
   const computeSugPos = useCallback(() => {
@@ -167,44 +180,50 @@ export default function Dashboard() {
     }
   }, []);
 
-  const fetchParkingLots = useCallback(async (coords, opts = {}) => {
-    const { silent = false } = opts;
-    if (!silent) {
-      setLoading(true);
-      setError("");
-      setNotice("");
-    }
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_BASE}/api/parkinglots`, {
-        params: {
-          lat: coords.latitude,
-          lng: coords.longitude,
-          radius: Math.max(500, Math.round(((rangeKm || 5) * 1000))),
-        },
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      setParkingLots(res.data.parkingLots || []);
-      setLastUpdated(new Date());
-      currentCoordsRef.current = coords;
-      // Update the user marker position on map
-      try {
-        if (userMarkerRef.current) {
-          userMarkerRef.current.setLatLng([coords.latitude, coords.longitude]);
-        }
-      } catch (e) {
-        void e;
+  const fetchParkingLots = useCallback(
+    async (coords, opts = {}) => {
+      const { silent = false } = opts;
+      if (!silent) {
+        setLoading(true);
+        setError("");
+        setNotice("");
       }
-    } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.message ||
-        "Could not fetch parking lots.";
-      if (!silent) setError(msg);
-    } finally {
-      if (!silent) setLoading(false);
-    }
-  }, [rangeKm]);
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${API_BASE}/api/parkinglots`, {
+          params: {
+            lat: coords.latitude,
+            lng: coords.longitude,
+            radius: Math.max(500, Math.round((rangeKm || 5) * 1000)),
+          },
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        setParkingLots(res.data.parkingLots || []);
+        setLastUpdated(new Date());
+        currentCoordsRef.current = coords;
+        // Update the user marker position on map
+        try {
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setLatLng([
+              coords.latitude,
+              coords.longitude,
+            ]);
+          }
+        } catch (e) {
+          void e;
+        }
+      } catch (err) {
+        const msg =
+          err.response?.data?.message ||
+          err.message ||
+          "Could not fetch parking lots.";
+        if (!silent) setError(msg);
+      } finally {
+        if (!silent) setLoading(false);
+      }
+    },
+    [rangeKm]
+  );
 
   // Ask for user's location and load parking lots
   // More robust geo acquisition: try getCurrentPosition, then fallback to watchPosition
@@ -325,8 +344,23 @@ export default function Dashboard() {
   // Refetch silently when the search radius changes
   useEffect(() => {
     fetchParkingLots(currentCoordsRef.current, { silent: true });
+    // Persist radius to localStorage
+    try {
+      localStorage.setItem("parkingFilters:rangeKm", String(rangeKm));
+    } catch (e) {
+      void e;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rangeKm]);
+
+  // Persist area selection
+  useEffect(() => {
+    try {
+      localStorage.setItem("parkingFilters:area", selectedArea);
+    } catch (e) {
+      void e;
+    }
+  }, [selectedArea]);
 
   // Haversine distance (in meters) for nearby area computation
   function haversine(lat1, lon1, lat2, lon2) {
@@ -336,8 +370,7 @@ export default function Dashboard() {
     const dLon = toRad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) ** 2;
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -928,21 +961,57 @@ export default function Dashboard() {
               position: "fixed",
               left: 12,
               top: 92,
-              width: 300,
+              width: 320,
               maxWidth: "90vw",
-              background: "#0b1220",
-              color: "#e5e7eb",
-              border: "1px solid #1f2937",
-              borderRadius: 10,
-              padding: 12,
+              background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+              color: "#f1f5f9",
+              border: "1px solid #334155",
+              borderRadius: 12,
+              padding: 16,
               zIndex: 1000,
-              boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
             }}
           >
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>Filters</div>
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 13, opacity: 0.9, marginBottom: 4 }}>
-                Search radius: {rangeKm} km
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 12,
+                paddingBottom: 8,
+                borderBottom: "1px solid #334155",
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: 16 }}>🔍 Filters</div>
+              <button
+                onClick={() => {
+                  setRangeKm(5);
+                  setSelectedArea("all");
+                  fetchParkingLots(currentCoordsRef.current);
+                }}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #475569",
+                  color: "#94a3b8",
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                Reset
+              </button>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  marginBottom: 8,
+                  color: "#cbd5e1",
+                }}
+              >
+                📏 Search Radius: <span style={{ color: "#60a5fa" }}>{rangeKm} km</span>
               </div>
               <input
                 type="range"
@@ -951,32 +1020,72 @@ export default function Dashboard() {
                 step={1}
                 value={rangeKm}
                 onChange={(e) => setRangeKm(Number(e.target.value) || 5)}
-                style={{ width: "100%" }}
+                style={{
+                  width: "100%",
+                  accentColor: "#3b82f6",
+                }}
               />
-              <button
-                className="small-button"
-                style={{ marginTop: 8 }}
-                onClick={() => fetchParkingLots(currentCoordsRef.current)}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 11,
+                  color: "#64748b",
+                  marginTop: 4,
+                }}
               >
-                Apply Radius
-              </button>
+                <span>1 km</span>
+                <span>25 km</span>
+              </div>
             </div>
             <div>
-              <div style={{ fontSize: 13, opacity: 0.9, marginBottom: 4 }}>
-                Areas near you
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  marginBottom: 8,
+                  color: "#cbd5e1",
+                }}
+              >
+                📍 Filter by Area
               </div>
               <select
                 value={selectedArea}
                 onChange={(e) => setSelectedArea(e.target.value)}
-                style={{ width: "100%", padding: 8, borderRadius: 8 }}
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  borderRadius: 8,
+                  border: "1px solid #334155",
+                  background: "#1e293b",
+                  color: "#f1f5f9",
+                  fontSize: 14,
+                  cursor: "pointer",
+                }}
               >
-                <option value="all">All areas</option>
-                {nearbyAreas.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                <option value="all">All areas ({displayLots.length})</option>
+                {nearbyAreas.map((name) => {
+                  const count = parkingLots.filter(
+                    (l) => (l?.address?.city || "").trim() === name
+                  ).length;
+                  return (
+                    <option key={name} value={name}>
+                      {name} ({count})
+                    </option>
+                  );
+                })}
               </select>
+              {selectedArea !== "all" && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: "#94a3b8",
+                  }}
+                >
+                  Showing {displayLots.length} lot{displayLots.length !== 1 ? "s" : ""} in {selectedArea}
+                </div>
+              )}
             </div>
           </div>
         )}
